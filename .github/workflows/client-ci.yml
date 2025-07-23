@@ -1,5 +1,9 @@
 name: Build Client App
 
+defaults:
+  run:
+    working-directory: ./client
+
 on:
   pull_request:
     branches:
@@ -15,8 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Go to client directory
-        run: cd client
 
       - name: Install dependencies
         run: npm install
