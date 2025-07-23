@@ -1,5 +1,5 @@
 const App = () => {
-  return <div>Jobify App</div>;
+  return <h1>Jobify App</h1>;
 };
 
 export default App;
