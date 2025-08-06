@@ -2,10 +2,7 @@ import { Outlet } from "react-router-dom";
 
 const HomeLayout = () => {
   return (
-    <div>
-      <nav>NavBar goes here</nav>
-      <Outlet />
-    </div>
+    <Outlet />
   );
 };
 export default HomeLayout;
