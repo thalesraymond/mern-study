@@ -1,5 +1,5 @@
 import Wrapper from "../assets/wrappers/SmallSidebar";
-import { useDashboardContext } from "../pages/DashboardLayout";
+import { useDashboardContext } from "../pages/DashboardContext";
 
 const SmallSidebar = () => {
   const data = useDashboardContext();

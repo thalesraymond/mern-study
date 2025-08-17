@@ -1,9 +1,8 @@
 import {Outlet} from "react-router-dom";
 import Wrapper from "../assets/wrappers/Dashboard";
 import {BigSidebar, Navbar, SmallSidebar} from "../components";
-import {createContext, useContext, useState} from "react";
-
-const DashboardContext = createContext({});
+import {useState} from "react";
+import DashboardContext from "./DashboardContext";
 
 const DashboardLayout = () => {
     // TODO: Temp
@@ -51,5 +50,5 @@ const DashboardLayout = () => {
     );
 };
 
-export const useDashboardContext = () => useContext(DashboardContext)
+
 export default DashboardLayout;
