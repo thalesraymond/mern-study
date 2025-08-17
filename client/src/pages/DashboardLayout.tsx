@@ -3,7 +3,7 @@ import Wrapper from "../assets/wrappers/Dashboard";
 import {BigSidebar, Navbar, SmallSidebar} from "../components";
 import {createContext, useContext, useState} from "react";
 
-const DashboardContext = createContext();
+const DashboardContext = createContext({});
 
 const DashboardLayout = () => {
     // TODO: Temp
@@ -13,6 +13,7 @@ const DashboardLayout = () => {
 
     const toggleDarkTheme = () => {
         console.log("toggle dark theme");
+        setIsDarkTheme(!isDarkTheme);
     };
 
     const toggleSidebar = () => {
