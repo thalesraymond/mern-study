@@ -4,7 +4,7 @@ import { IoBarChartSharp } from "react-icons/io5";
 import { ImProfile } from "react-icons/im";
 import { MdAdminPanelSettings } from "react-icons/md";
 
-const Links = [
+const links = [
   {
     text: "add job",
     path: ".",
@@ -32,4 +32,4 @@ const Links = [
   },
 ];
 
-export default Links;
+export default links;
