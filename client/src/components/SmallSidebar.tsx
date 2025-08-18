@@ -41,7 +41,7 @@ const SmallSidebar = () => {
                     onClick={() => data.toggleSidebar()}
                   >
                     <span className="icon">{link.icon}</span>
-                    <span className="text">{link.text}</span>
+                    {link.text}
                   </NavLink>
                 );
               }
