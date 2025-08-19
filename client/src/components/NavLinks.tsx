@@ -3,10 +3,10 @@ import { useDashboardContext } from "../pages/DashboardContext";
 import links from "../utils/Links";
 import { NavLink } from "react-router-dom";
 
-const NavLinks = () => {
+const NavLinks = ({ isBigSidebar }: { isBigSidebar: boolean }) => {
   const data = useDashboardContext();
   console.log(data);
-  
+
   return (
     <div className="nav-links">
       {links.map((link: { text: string; path: string; icon: JSX.Element }) => {
@@ -15,7 +15,7 @@ const NavLinks = () => {
             to={link.path}
             key={link.text}
             className={"nav-link"}
-            onClick={() => data.toggleSidebar()}
+            onClick={() => (!isBigSidebar ? data.toggleSidebar() : null)}
             end
           >
             <span className="icon">{link.icon}</span>
