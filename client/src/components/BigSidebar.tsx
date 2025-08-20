@@ -4,27 +4,27 @@ import Logo from "./Logo";
 import { useDashboardContext } from "../pages/DashboardContext";
 
 const BigSidebar = () => {
-  const data = useDashboardContext();
+    const data = useDashboardContext();
 
-  return (
-    <Wrapper>
-      <div
-        className={
-          data.showSidebar
-            ? "sidebar-container"
-            : "sidebar-container show-sidebar"
-        }
-      >
-        <div className="content">
-          <header>
-            <Logo />
-          </header>
+    return (
+        <Wrapper>
+            <div
+                className={
+                    data.showSidebar
+                        ? "sidebar-container"
+                        : "sidebar-container show-sidebar"
+                }
+            >
+                <div className="content">
+                    <header>
+                        <Logo />
+                    </header>
 
-          <NavLinks isBigSidebar />
-        </div>
-      </div>
-    </Wrapper>
-  );
+                    <NavLinks isBigSidebar />
+                </div>
+            </div>
+        </Wrapper>
+    );
 };
 
 export default BigSidebar;
