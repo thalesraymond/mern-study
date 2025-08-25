@@ -3,7 +3,7 @@ import Wrapper from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
 import { useState } from "react";
 import DashboardContext from "./DashboardContext";
-import {getSavedDarkTheme } from "../App"
+import { getSavedDarkTheme } from "../DarkThemeSwitcher";
 
 const DashboardLayout = () => {
   // TODO: Temp
