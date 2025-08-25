@@ -10,7 +10,7 @@ import {
   Stats,
   AllJobs,
   Profile,
-  Admin
+  Admin,
 } from "./pages";
 
 const router = createBrowserRouter([
@@ -60,6 +60,7 @@ const router = createBrowserRouter([
     ],
   },
 ]);
+
 const App = () => {
   return <RouterProvider router={router} />;
 };
