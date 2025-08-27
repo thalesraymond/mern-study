@@ -1,0 +1,62 @@
+{
+  "name": "jobify",
+  "version": "1.0.0",
+  "description": "Jobify - Mern Course",
+  "homepage": "https://github.com/thalesraymond/mern-study#readme",
+  "bugs": {
+    "url": "https://github.com/thalesraymond/mern-study/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thalesraymond/mern-study.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "./dist/server.js",
+  "scripts": {
+    "setup-project": "npm i && cd client && npm i",
+    "build": "tsc",
+    "lint": "eslint src --ext .ts",
+    "test": "npm run test",
+    "start": "npm run build && node ./dist/server.js",
+    "dev": "npx tsx --env-file=.env --watch ./src/server.ts"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.7.0",
+    "concurrently": "^9.2.1",
+    "cookie-parser": "^1.4.7",
+    "datauri": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^8.0.1",
+    "express-validator": "^7.2.1",
+    "helmet": "^8.1.0",
+    "http-status-codes": "^2.3.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "morgan": "^1.10.0",
+    "multer": "^2.0.2",
+    "nanoid": "^2.0.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.34.0",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/cookie-parser": "^1.4.4",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.2",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6",
+    "typescript-eslint": "^8.41.0"
+  }
+}
