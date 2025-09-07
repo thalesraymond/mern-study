@@ -6,7 +6,7 @@ import express, {Request, Response} from "express";
 
 const jobRoutes = express.Router();
 
-const jobs = [
+let jobs = [
     {
         id: nanoid(),
         company: "Google",
@@ -79,6 +79,24 @@ jobRoutes.put("/api/v1/jobs/:id", (req: Request, res: Response) => {
     jobToEdit.position = position;
 
     return res.status(StatusCodes.OK).json(jobToEdit);
-})
+});
+
+jobRoutes.delete("/api/v1/jobs/:id", (req: Request, res: Response) => {
+    const {id} = req.params;
+
+    if (!id) {
+        return res.status(StatusCodes.BAD_REQUEST).json({msg: "Invalid request"});
+    }
+
+    const foundJob = jobs.find(job => job.id === id);
+
+    if(foundJob) {
+        jobs = jobs.filter(job => job.id !== id);
+
+        return res.status(StatusCodes.NO_CONTENT).send();
+    }
+
+    return res.status(StatusCodes.NOT_FOUND).json({msg: "Job not found"});
+});
 
 export default jobRoutes;
