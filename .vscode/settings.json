@@ -1,0 +1,4 @@
+{
+  "CodeGPT.apiKey": "OpenAI",
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

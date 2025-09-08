@@ -1,5 +1,3 @@
-
-// GET Jobs
 import {StatusCodes} from "http-status-codes";
 import nanoid from "nanoid";
 import express, {Request, Response} from "express";
