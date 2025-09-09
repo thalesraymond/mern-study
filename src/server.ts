@@ -1,8 +1,14 @@
 import express from "express";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
-import jobRoutes from "./JobRoutes";
 import { StatusCodes } from "http-status-codes";
+
+// routes
+
+import jobRoutes from "./routes/JobRoutes.js";
+
+// end routes
+
 
 const app = express();
 
@@ -14,16 +20,13 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(express.json());
 
-app.use(jobRoutes);
-
-
+app.use("/api/v1/jobs", jobRoutes);
 
 app.use((_req, res) => {
   return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
 });
 
-
-app.use((err: any, _req:any, res:any) => {
+app.use((err: any, _req: any, res: any) => {
   console.log(err);
 
   return res
@@ -34,6 +37,5 @@ app.use((err: any, _req:any, res:any) => {
 app.listen(process.env.PORT ?? 5100, () => {
   console.log("server running....");
 });
-
 
 export default app;
