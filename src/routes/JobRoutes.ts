@@ -5,15 +5,15 @@ const jobRoutes = express.Router();
 
 const jobController = new JobController();
 
-jobRoutes.get("/api/v1/jobs", jobController.getAllJobs);
+jobRoutes
+  .route("/")
+  .get(jobController.getAllJobs)
+  .post(jobController.createJob);
 
-jobRoutes.get("/api/v1/jobs/:id", jobController.getJobById);
-
-jobRoutes.post("/api/v1/jobs", jobController.createJob);
-
-jobRoutes.put("/api/v1/jobs/:id", jobController.updateJob);
-
-jobRoutes.delete("/api/v1/jobs/:id", jobController.deleteJob);
+jobRoutes
+  .route("/:id")
+  .get(jobController.getJobById)
+  .put(jobController.updateJob)
+  .delete(jobController.deleteJob);
 
 export default jobRoutes;
-

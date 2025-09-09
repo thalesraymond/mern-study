@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(express.json());
 
-app.use(jobRoutes);
+app.use("/api/v1/jobs", jobRoutes);
 
 app.use((_req, res) => {
   return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
