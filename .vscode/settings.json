@@ -1,4 +1,4 @@
 {
-  "CodeGPT.apiKey": "OpenAI",
+  "CodeGPT.apiKey": "Gemini CLI",
   "typescript.tsdk": "node_modules/typescript/lib"
 }
