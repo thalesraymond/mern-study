@@ -21,6 +21,8 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       "no-debugger": "error",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "error",
     },
     linterOptions: {
       reportUnusedDisableDirectives: true,
