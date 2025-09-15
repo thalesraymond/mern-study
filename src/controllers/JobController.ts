@@ -1,92 +1,68 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import nanoid from "nanoid";
-
-interface Job {
-  id: string;
-  company: string;
-  position: string;
-}
+import JobRepository from "../infrastructure/repositories/JobRepository.js";
 
 export default class JobController {
-  private jobs: Job[] = [
-    {
-      id: nanoid(),
-      company: "Google",
-      position: "Software Engineer",
-    },
-    {
-      id: nanoid(),
-      company: "Microsoft",
-      position: "Software Engineer",
-    },
-    {
-      id: nanoid(),
-      company: "Amazon",
-      position: "Software Engineer",
-    },
-  ];
+  private jobRepository = new JobRepository();
 
-  public getAllJobs = (req: Request, res: Response) => {
-    res.status(StatusCodes.OK).json({ jobs: this.jobs });
+  public getAllJobs = async (req: Request, res: Response) => {
+    const jobs = await this.jobRepository.findAll();
+    res.status(StatusCodes.OK).json({ jobs });
   };
 
-  public createJob = (req: Request, res: Response) => {
-    const { company, position } = req.body;
+  public createJob = async (req: Request, res: Response) => {
+    const { company, position, location, jobType, status } = req.body;
 
     if (!company || !position) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "Invalid request" });
+        .json({ msg: "Company and position are required" });
     }
 
-    const id = nanoid();
-    const job: Job = { id, company, position };
+    const jobData = { company, position, location, jobType, status };
 
-    this.jobs.push(job);
+    const job = await this.jobRepository.create(jobData);
 
     res.status(StatusCodes.CREATED).json({ job });
   };
 
-  public getJobById = (req: Request, res: Response) => {
+  public getJobById = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const foundJob = this.jobs.find((job) => job.id === id);
+    const job = await this.jobRepository.findById(id);
 
-    if (foundJob) {
-      return res.status(StatusCodes.OK).json(foundJob);
+    if (job) {
+      return res.status(StatusCodes.OK).json(job);
     }
 
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
   };
 
-  public updateJob = (req: Request, res: Response) => {
+  public updateJob = async (req: Request, res: Response) => {
     const { id } = req.params;
+    const { company, position, location, jobType, status } = req.body;
 
-    const { company, position } = req.body;
     if (!company || !position) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "Invalid request" });
+        .json({ msg: "Company and position are required" });
     }
 
-    const jobToEdit = this.jobs.find((job) => job.id === id);
+    const jobData = { company, position, location, jobType, status };
 
-    if (!jobToEdit) {
+    const updatedJob = await this.jobRepository.update(id, jobData);
+
+    if (!updatedJob) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
     }
 
-    jobToEdit.company = company;
-    jobToEdit.position = position;
-
-    return res.status(StatusCodes.OK).json(jobToEdit);
+    return res.status(StatusCodes.OK).json(updatedJob);
   };
 
-  public deleteJob = (req: Request, res: Response) => {
+  public deleteJob = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const foundJob = this.jobs.find((job) => job.id === id);
+    const success = await this.jobRepository.delete(id);
 
-    if (foundJob) {
-      this.jobs = this.jobs.filter((job) => job.id !== id);
+    if (success) {
       return res.status(StatusCodes.NO_CONTENT).send();
     }
 

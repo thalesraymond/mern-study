@@ -11,16 +11,16 @@ export default class JobRepository extends BaseRepository<Job> {
     }
 
     private toEntity(doc: JobDocument): Job {
-        const job = new Job();
-        job.id = doc.id;
-        job.company = doc.company;
-        job.position = doc.position;
-        job.status = doc.status;
-        job.jobType = doc.jobType;
-        job.location = doc.location;
-        job.createdAt = doc.createdAt;
-        job.updatedAt = doc.updatedAt;
-        return job;
+        return new Job({
+            id: doc.id,
+            company: doc.company,
+            position: doc.position,
+            status: doc.status,
+            jobType: doc.jobType,
+            location: doc.location,
+            createdAt: doc.createdAt,
+            updatedAt: doc.updatedAt,
+        });
     }
 
     public async create(data: Omit<Job, 'id' | 'createdAt' | 'updatedAt'>): Promise<Job> {
