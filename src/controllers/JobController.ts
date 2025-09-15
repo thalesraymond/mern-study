@@ -1,37 +1,24 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import nanoid from "nanoid";
-
-interface Job {
-  id: string;
-  company: string;
-  position: string;
-}
+import JobModel from "../models/JobModel.js";
 
 export default class JobController {
-  private jobs: Job[] = [
-    {
-      id: nanoid(),
-      company: "Google",
-      position: "Software Engineer",
-    },
-    {
-      id: nanoid(),
-      company: "Microsoft",
-      position: "Software Engineer",
-    },
-    {
-      id: nanoid(),
-      company: "Amazon",
-      position: "Software Engineer",
-    },
-  ];
+  public getAllJobs = async (req: Request, res: Response) => {
+    // list all jobs using JobModel
 
-  public getAllJobs = (req: Request, res: Response) => {
-    res.status(StatusCodes.OK).json({ jobs: this.jobs });
+    try {
+      const jobs = await JobModel.find();
+
+      return res.status(StatusCodes.OK).json(jobs);
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        msg: "Internal server error",
+        error: error,
+      });
+    }
   };
 
-  public createJob = (req: Request, res: Response) => {
+  public createJob = async (req: Request, res: Response) => {
     const { company, position } = req.body;
 
     if (!company || !position) {
@@ -40,26 +27,40 @@ export default class JobController {
         .json({ msg: "Invalid request" });
     }
 
-    const id = nanoid();
-    const job: Job = { id, company, position };
+    try {
+      const createJobResult = await JobModel.create({
+        company: company,
+        position,
+      });
 
-    this.jobs.push(job);
-
-    res.status(StatusCodes.CREATED).json({ job });
-  };
-
-  public getJobById = (req: Request, res: Response) => {
-    const { id } = req.params;
-    const foundJob = this.jobs.find((job) => job.id === id);
-
-    if (foundJob) {
-      return res.status(StatusCodes.OK).json(foundJob);
+      return res.status(StatusCodes.CREATED).json(createJobResult);
+    } catch (error) {
+      return res
+        .status(StatusCodes.INTERNAL_SERVER_ERROR)
+        .json({ msg: "Internal server error", error: error });
     }
-
-    return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
   };
 
-  public updateJob = (req: Request, res: Response) => {
+  public getJobById = async (req: Request, res: Response) => {
+    const { id } = req.params;
+
+    try {
+      const job = await JobModel.findById(id);
+
+      if (!job) {
+        return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
+      }
+
+      return res.status(StatusCodes.OK).json(job);
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        msg: "Internal server error",
+        error: error,
+      });
+    }
+  };
+
+  public updateJob = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const { company, position } = req.body;
@@ -69,7 +70,7 @@ export default class JobController {
         .json({ msg: "Invalid request" });
     }
 
-    const jobToEdit = this.jobs.find((job) => job.id === id);
+    const jobToEdit = await JobModel.findById(id);
 
     if (!jobToEdit) {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
@@ -78,18 +79,21 @@ export default class JobController {
     jobToEdit.company = company;
     jobToEdit.position = position;
 
+    await JobModel.findByIdAndUpdate(id, jobToEdit);
+
     return res.status(StatusCodes.OK).json(jobToEdit);
   };
 
-  public deleteJob = (req: Request, res: Response) => {
+  public deleteJob = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const foundJob = this.jobs.find((job) => job.id === id);
+    const foundJob = await JobModel.findById(id);
 
-    if (foundJob) {
-      this.jobs = this.jobs.filter((job) => job.id !== id);
-      return res.status(StatusCodes.NO_CONTENT).send();
+    if (!foundJob) {
+      return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
     }
 
-    return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
+    await JobModel.findByIdAndDelete(id);
+
+    return res.status(StatusCodes.NO_CONTENT).send();
   };
 }
