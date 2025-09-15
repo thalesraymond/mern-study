@@ -64,6 +64,7 @@ export default class JobController {
     const { id } = req.params;
 
     const { company, position } = req.body;
+    
     if (!company || !position) {
       return res
         .status(StatusCodes.BAD_REQUEST)
@@ -92,8 +93,15 @@ export default class JobController {
       return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
     }
 
-    await JobModel.findByIdAndDelete(id);
+    try {
+      await JobModel.findByIdAndDelete(id);
 
-    return res.status(StatusCodes.NO_CONTENT).send();
+      return res.status(StatusCodes.NO_CONTENT).send();
+    } catch (error) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        msg: "Internal server error",
+        error: error,
+      });
+    }
   };
 }
