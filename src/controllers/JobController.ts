@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import JobModel from "../models/JobModel.js";
+import NotFoundError from "../errors/NotFoundError.js";
+import BadRequestError from "../errors/BadRequestError.js";
 
 export default class JobController {
   public getAllJobs = async (req: Request, res: Response) => {
@@ -22,42 +24,29 @@ export default class JobController {
     const { company, position } = req.body;
 
     if (!company || !position) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "Invalid request" });
+      throw new BadRequestError("Invalid request");
     }
 
-    try {
-      const createJobResult = await JobModel.create({
-        company: company,
-        position,
-      });
+    const createJobResult = await JobModel.create({
+      company: company,
+      position,
+    });
 
-      return res.status(StatusCodes.CREATED).json(createJobResult);
-    } catch (error) {
-      return res
-        .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ msg: "Internal server error", error: error });
-    }
+    return res.status(StatusCodes.CREATED).json(createJobResult);
+
   };
 
   public getJobById = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    try {
-      const job = await JobModel.findById(id);
+    const job = await JobModel.findById(id);
 
-      if (!job) {
-        return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
-      }
-
-      return res.status(StatusCodes.OK).json(job);
-    } catch (error) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        msg: "Internal server error",
-        error: error,
-      });
+    if (!job) {
+      throw new NotFoundError(`Job not found with id ${id}`);
     }
+
+    return res.status(StatusCodes.OK).json(job);
+
   };
 
   public updateJob = async (req: Request, res: Response) => {
@@ -66,15 +55,14 @@ export default class JobController {
     const { company, position } = req.body;
     
     if (!company || !position) {
-      return res
-        .status(StatusCodes.BAD_REQUEST)
-        .json({ msg: "Invalid request" });
+
+      throw new BadRequestError("Invalid request");
     }
 
     const jobToEdit = await JobModel.findById(id);
 
     if (!jobToEdit) {
-      return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
+      throw new NotFoundError(`Job not found with id ${id}`);
     }
 
     jobToEdit.company = company;
@@ -90,18 +78,11 @@ export default class JobController {
     const foundJob = await JobModel.findById(id);
 
     if (!foundJob) {
-      return res.status(StatusCodes.NOT_FOUND).json({ msg: "Job not found" });
+      throw new NotFoundError(`Job not found with id ${id}`);
     }
 
-    try {
-      await JobModel.findByIdAndDelete(id);
+    await JobModel.findByIdAndDelete(id);
 
-      return res.status(StatusCodes.NO_CONTENT).send();
-    } catch (error) {
-      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-        msg: "Internal server error",
-        error: error,
-      });
-    }
+    return res.status(StatusCodes.NO_CONTENT).send();
   };
 }

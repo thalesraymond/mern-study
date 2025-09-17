@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 // routes
 
 import jobRoutes from "./routes/JobRoutes.js";
+import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
 
 // end routes
 
@@ -26,20 +27,15 @@ app.use((_req, res) => {
   return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
 });
 
-app.use((err: any, _req: any, res: any) => {
-  console.log(err);
+app.use(ErrorHandlerMiddleware.errorHandler);
 
-  return res
-    .status(StatusCodes.INTERNAL_SERVER_ERROR)
-    .json({ msg: "Something went wrong" });
-});
 try {
   if (!process.env.MONGO_CONNECTION_STRING) {
     throw new Error("MONGO_CONNECTION_STRING is not defined");
   }
-  
+
   await mongoose.connect(process.env.MONGO_CONNECTION_STRING);
-  
+
   app.listen(process.env.PORT ?? 5100, () => {
     console.log("server running....");
   });
