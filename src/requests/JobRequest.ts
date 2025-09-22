@@ -1,6 +1,4 @@
-import { Request } from "express";
-
-export interface JobBody {
+export interface JobPayload {
   id: string;
   company: string;
   position: string;
@@ -12,5 +10,3 @@ export interface JobBody {
 export interface JobParams {
   id: string;
 }
-
-export interface JobRequest extends Request<JobParams, any, JobBody> {}
