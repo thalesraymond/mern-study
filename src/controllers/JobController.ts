@@ -4,6 +4,7 @@ import JobModel from "../models/JobModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import { validationResult } from "express-validator";
+import { JobRequest } from "../requests/JobRequest.js";
 
 /**
  * Controller class for handling job-related operations.
@@ -20,18 +21,18 @@ import { validationResult } from "express-validator";
  * @class JobController
  */
 export default class JobController {
-  public getAllJobs = async (req: Request, res: Response) => {
+  public getAllJobs = async (req: JobRequest, res: Response) => {
     const jobs = await JobModel.find();
     return res.status(StatusCodes.OK).json({ jobs });
   };
 
-  public createJob = async (req: Request, res: Response) => {
+  public createJob = async (req: JobRequest, res: Response) => {
     const job = await JobModel.create(req.body);
-    
+
     return res.status(StatusCodes.CREATED).json({ job });
   };
 
-  public getJobById = async (req: Request, res: Response) => {
+  public getJobById = async (req: JobRequest, res: Response) => {
     const { id } = req.params;
     const job = await JobModel.findById(id);
 
@@ -42,7 +43,7 @@ export default class JobController {
     return res.status(StatusCodes.OK).json({ job });
   };
 
-  public updateJob = async (req: Request, res: Response) => {
+  public updateJob = async (req: JobRequest, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       const errorMessages = errors.array().map((error) => error.msg);
@@ -61,7 +62,7 @@ export default class JobController {
     return res.status(StatusCodes.OK).json({ job: updatedJob });
   };
 
-  public deleteJob = async (req: Request, res: Response) => {
+  public deleteJob = async (req: JobRequest, res: Response) => {
     const { id } = req.params;
     const removedJob = await JobModel.findByIdAndDelete(id);
 
