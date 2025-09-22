@@ -9,12 +9,12 @@ const jobController = new JobController();
 jobRoutes
   .route("/")
   .get(jobController.getAllJobs)
-  .post(JobValidator.changeJobValidation, jobController.createJob);
+  .post(...JobValidator.changeJobValidation, jobController.createJob);
 
 jobRoutes
   .route("/:id")
   .get(jobController.getJobById)
-  .put(JobValidator.changeJobValidation, jobController.updateJob)
+  .put(...JobValidator.changeJobValidation, jobController.updateJob)
   .delete(jobController.deleteJob);
 
 export default jobRoutes;

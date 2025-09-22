@@ -1,9 +1,20 @@
-import { body, ValidationChain } from "express-validator";
+import { body } from "express-validator";
 import JobStatus from "../models/JobStatus.js";
 import JobType from "../models/JobType.js";
+import ValidationMiddleware from "../middleware/ValidationMiddleware.js";
 
+/**
+ * Provides validation middleware for job-related requests.
+ *
+ * @remarks
+ * The `JobValidator` class contains static methods for validating job data in HTTP requests.
+ *
+ * @example
+ * // Usage in an Express route
+ * router.post('/jobs', JobValidator.changeJobValidation, jobController.createJob);
+ */
 export default class JobValidator {
-  public static changeJobValidation: ValidationChain[] = [
+  public static changeJobValidation = ValidationMiddleware.validationErrorHandler([
     body("company").notEmpty().withMessage("company is required"),
     body("position").notEmpty().withMessage("position is required"),
     body("status")
@@ -14,5 +25,5 @@ export default class JobValidator {
       .optional()
       .isIn(Object.values(JobType))
       .withMessage("invalid job type"),
-  ];
+  ]);
 }

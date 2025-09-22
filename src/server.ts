@@ -29,6 +29,7 @@ app.use((_req, res) => {
 
 app.use(ErrorHandlerMiddleware.errorHandler);
 
+
 try {
   if (!process.env.MONGO_CONNECTION_STRING) {
     throw new Error("MONGO_CONNECTION_STRING is not defined");

@@ -2,6 +2,18 @@ import mangoose from "mongoose";
 import JobStatus from "./JobStatus.js";
 import JobType from "./JobType.js";
 
+/**
+ * Represents a job entry with company, position, status, type, and location details.
+ *
+ * @property id - Unique identifier for the job.
+ * @property company - Name of the company offering the job.
+ * @property position - Title or role of the job.
+ * @property status - Current status of the job (e.g., applied, interviewing, etc.).
+ * @property jobType - Type of the job (e.g., full-time, part-time, contract).
+ * @property location - Location where the job is based.
+ * @property createdAt - Date when the job entry was created.
+ * @property updatedAt - Date when the job entry was last updated.
+ */
 interface JobSchema {
   id: string;
   company: string;
