@@ -3,22 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import JobModel from "../models/JobModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { body, validationResult } from "express-validator";
-import JobStatus from "../models/JobStatus.js";
-import JobType from "../models/JobType.js";
-
-export const validateJobInput = [
-  body("company").notEmpty().withMessage("company is required"),
-  body("position").notEmpty().withMessage("position is required"),
-  body("status")
-    .optional()
-    .isIn(Object.values(JobStatus))
-    .withMessage("invalid status value"),
-  body("jobType")
-    .optional()
-    .isIn(Object.values(JobType))
-    .withMessage("invalid job type"),
-];
+import { validationResult } from "express-validator";
 
 export default class JobController {
   public getAllJobs = async (req: Request, res: Response) => {
