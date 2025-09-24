@@ -1,6 +1,6 @@
 import { body } from "express-validator";
-import JobStatus from "../models/JobStatus.js";
-import JobType from "../models/JobType.js";
+import JobStatus from "../models/jobs/JobStatus.js";
+import JobType from "../models/jobs/JobType.js";
 import ValidationMiddleware from "../middleware/ValidationMiddleware.js";
 
 /**
@@ -14,17 +14,17 @@ import ValidationMiddleware from "../middleware/ValidationMiddleware.js";
  * router.post('/jobs', JobValidator.changeJobValidation, jobController.createJob);
  */
 export default class JobValidator {
-  public static changeJobValidation =
-    ValidationMiddleware.validationErrorHandler([
-      body("company").notEmpty().withMessage("company is required"),
-      body("position").notEmpty().withMessage("position is required"),
-      body("status")
-        .optional()
-        .isIn(Object.values(JobStatus))
-        .withMessage("invalid status value"),
-      body("jobType")
-        .optional()
-        .isIn(Object.values(JobType))
-        .withMessage("invalid job type"),
-    ]);
+    public static changeJobValidation =
+        ValidationMiddleware.validationErrorHandler([
+            body("company").notEmpty().withMessage("company is required"),
+            body("position").notEmpty().withMessage("position is required"),
+            body("status")
+                .optional()
+                .isIn(Object.values(JobStatus))
+                .withMessage("invalid status value"),
+            body("jobType")
+                .optional()
+                .isIn(Object.values(JobType))
+                .withMessage("invalid job type"),
+        ]);
 }

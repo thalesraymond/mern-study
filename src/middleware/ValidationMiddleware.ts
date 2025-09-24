@@ -23,18 +23,20 @@ import BadRequestError from "../errors/BadRequestError.js";
  * ```
  */
 export default class ValidationMiddleware {
-  public static validationErrorHandler(validations: ValidationChain[]) {
-    return [
-      ...validations,
-      (request: Request, response: Response, next: NextFunction) => {
-        const errors = validationResult(request);
-        if (!errors.isEmpty()) {
-          const errorMessages = errors.array().map((error) => error.msg);
+    public static validationErrorHandler(validations: ValidationChain[]) {
+        return [
+            ...validations,
+            (request: Request, response: Response, next: NextFunction) => {
+                const errors = validationResult(request);
+                if (!errors.isEmpty()) {
+                    const errorMessages = errors
+                        .array()
+                        .map((error) => error.msg);
 
-          throw new BadRequestError(errorMessages.join(", "));
-        }
-        next();
-      },
-    ];
-  }
+                    throw new BadRequestError(errorMessages.join(", "));
+                }
+                next();
+            },
+        ];
+    }
 }

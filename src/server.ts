@@ -16,7 +16,7 @@ const app = express();
 dotenv.config();
 
 if (process.env.NODE_ENV === "development") {
-  app.use(morgan("dev"));
+    app.use(morgan("dev"));
 }
 
 app.use(express.json());
@@ -24,24 +24,23 @@ app.use(express.json());
 app.use("/api/v1/jobs", jobRoutes);
 
 app.use((_req, res) => {
-  return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
+    return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
 });
 
 app.use(ErrorHandlerMiddleware.errorHandler);
 
-
 try {
-  if (!process.env.MONGO_CONNECTION_STRING) {
-    throw new Error("MONGO_CONNECTION_STRING is not defined");
-  }
+    if (!process.env.MONGO_CONNECTION_STRING) {
+        throw new Error("MONGO_CONNECTION_STRING is not defined");
+    }
 
-  await mongoose.connect(process.env.MONGO_CONNECTION_STRING);
+    await mongoose.connect(process.env.MONGO_CONNECTION_STRING);
 
-  app.listen(process.env.PORT ?? 5100, () => {
-    console.log("server running....");
-  });
+    app.listen(process.env.PORT ?? 5100, () => {
+        console.log("server running....");
+    });
 } catch (error) {
-  console.log(error);
+    console.log(error);
 }
 
 export default app;
