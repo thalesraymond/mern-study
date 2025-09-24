@@ -24,6 +24,7 @@ export default class JobController {
     res: Response<{ jobs: JobPayload[] }>
   ) => {
     const jobs = await JobModel.find();
+
     return res.status(StatusCodes.OK).json({ jobs });
   };
 
@@ -32,6 +33,7 @@ export default class JobController {
     res: Response<{ job: JobPayload }>
   ) => {
     const job = await JobModel.create(req.body);
+
     return res.status(StatusCodes.CREATED).json({ job });
   };
 
@@ -40,6 +42,7 @@ export default class JobController {
     res: Response<{ job: JobPayload }>
   ) => {
     const { id } = req.params;
+
     const job : JobPayload | null = await JobModel.findById(id);
 
     if (!job) {
@@ -58,7 +61,8 @@ export default class JobController {
     const updatedJob = await JobModel.findByIdAndUpdate(id, req.body, {
       new: true,
     });
-    if (!updatedJob) {
+
+    if(!updatedJob) {
       throw new NotFoundError(`Job not found with id ${id}`);
     }
 
@@ -70,11 +74,8 @@ export default class JobController {
     res: Response<{ msg: string }>
   ) => {
     const { id } = req.params;
-    const removedJob = await JobModel.findByIdAndDelete(id);
-
-    if (!removedJob) {
-      throw new NotFoundError(`Job not found with id ${id}`);
-    }
+    
+    await JobModel.findByIdAndDelete(id);
 
     return res.status(StatusCodes.OK).json({ msg: "Job deleted successfully" });
   };
