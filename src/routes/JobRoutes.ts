@@ -1,6 +1,7 @@
 import express from "express";
 import JobController from "../controllers/JobController.js";
 import JobValidator from "../validators/JobValidator.js";
+import IdValidator from "../validators/IdValidator.js";
 
 const jobRoutes = express.Router();
 
@@ -13,8 +14,12 @@ jobRoutes
 
 jobRoutes
   .route("/:id")
-  .get(jobController.getJobById)
-  .put(...JobValidator.changeJobValidation, jobController.updateJob)
-  .delete(jobController.deleteJob);
+  .get(...IdValidator.validateId, jobController.getJobById)
+  .put(
+    ...JobValidator.changeJobValidation,
+    ...IdValidator.validateId,
+    jobController.updateJob
+  )
+  .delete(...IdValidator.validateId, jobController.deleteJob);
 
 export default jobRoutes;
