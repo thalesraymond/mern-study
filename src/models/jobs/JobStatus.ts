@@ -7,9 +7,9 @@
  * @property {string} PENDING - The job application is pending and awaiting a decision.
  */
 enum JobStatus {
-  INTERVIEW = "interview",
-  DECLINED = "declined",
-  PENDING = "pending",
+    INTERVIEW = "interview",
+    DECLINED = "declined",
+    PENDING = "pending",
 }
 
 export default JobStatus;
