@@ -7,7 +7,9 @@ import mongoose from "mongoose";
 // routes
 
 import jobRoutes from "./routes/JobRoutes.js";
+import registerRoutes from "./routes/RegisterRoutes.js";
 import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
+import authRoutes from "./routes/AuthRoutes.js";
 
 // end routes
 
@@ -22,6 +24,10 @@ if (process.env.NODE_ENV === "development") {
 app.use(express.json());
 
 app.use("/api/v1/jobs", jobRoutes);
+
+app.use("/api/v1/auth", authRoutes);
+
+app.use("/api/v1/register", registerRoutes);
 
 app.use((_req, res) => {
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
