@@ -4,7 +4,6 @@ import UserModel from "../models/users/UserModel.js";
 import { UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import bcrypt from "bcryptjs";
 import PasswordUtils from "../utils/PasswordUtils.js";
 
 export default class UserController {
