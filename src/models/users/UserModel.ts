@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import UserRole from "./UserRole.js";
 
 interface UserSchema {
+    id: string;
     name: string;
     lastName: string;
     email: string;
