@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import JobModel from "../models/JobModel.js";
+import JobModel from "../models/jobs/JobModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import { JobPayload, JobParams } from "../requests/JobRequest.js";
 
@@ -19,64 +19,66 @@ import { JobPayload, JobParams } from "../requests/JobRequest.js";
  * @class JobController
  */
 export default class JobController {
-  public getAllJobs = async (
-    req: Request<{}, {}, {}>,
-    res: Response<{ jobs: JobPayload[] }>
-  ) => {
-    const jobs = await JobModel.find();
+    public getAllJobs = async (
+        req: Request<{}, {}, {}>,
+        res: Response<{ jobs: JobPayload[] }>
+    ) => {
+        const jobs = await JobModel.find();
 
-    return res.status(StatusCodes.OK).json({ jobs });
-  };
+        return res.status(StatusCodes.OK).json({ jobs });
+    };
 
-  public createJob = async (
-    req: Request<{}, {}, JobPayload>,
-    res: Response<{ job: JobPayload }>
-  ) => {
-    const job = await JobModel.create(req.body);
+    public createJob = async (
+        req: Request<{}, {}, JobPayload>,
+        res: Response<{ job: JobPayload }>
+    ) => {
+        const job = await JobModel.create(req.body);
 
-    return res.status(StatusCodes.CREATED).json({ job });
-  };
+        return res.status(StatusCodes.CREATED).json({ job });
+    };
 
-  public getJobById = async (
-    req: Request<JobParams>,
-    res: Response<{ job: JobPayload }>
-  ) => {
-    const { id } = req.params;
+    public getJobById = async (
+        req: Request<JobParams>,
+        res: Response<{ job: JobPayload }>
+    ) => {
+        const { id } = req.params;
 
-    const job : JobPayload | null = await JobModel.findById(id);
+        const job: JobPayload | null = await JobModel.findById(id);
 
-    if (!job) {
-      throw new NotFoundError(`Job not found with id ${id}`);
-    }
+        if (!job) {
+            throw new NotFoundError(`Job not found with id ${id}`);
+        }
 
-    return res.status(StatusCodes.OK).json({ job });
-  };
+        return res.status(StatusCodes.OK).json({ job });
+    };
 
-  public updateJob = async (
-    req: Request<JobParams, {}, JobPayload>,
-    res: Response<{ job: JobPayload }>
-  ) => {
-    const { id } = req.params;
+    public updateJob = async (
+        req: Request<JobParams, {}, JobPayload>,
+        res: Response<{ job: JobPayload }>
+    ) => {
+        const { id } = req.params;
 
-    const updatedJob = await JobModel.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
+        const updatedJob = await JobModel.findByIdAndUpdate(id, req.body, {
+            new: true,
+        });
 
-    if(!updatedJob) {
-      throw new NotFoundError(`Job not found with id ${id}`);
-    }
+        if (!updatedJob) {
+            throw new NotFoundError(`Job not found with id ${id}`);
+        }
 
-    return res.status(StatusCodes.OK).json({ job: updatedJob });
-  };
+        return res.status(StatusCodes.OK).json({ job: updatedJob });
+    };
 
-  public deleteJob = async (
-    req: Request<JobParams>,
-    res: Response<{ msg: string }>
-  ) => {
-    const { id } = req.params;
-    
-    await JobModel.findByIdAndDelete(id);
+    public deleteJob = async (
+        req: Request<JobParams>,
+        res: Response<{ msg: string }>
+    ) => {
+        const { id } = req.params;
 
-    return res.status(StatusCodes.OK).json({ msg: "Job deleted successfully" });
-  };
+        await JobModel.findByIdAndDelete(id);
+
+        return res
+            .status(StatusCodes.OK)
+            .json({ msg: "Job deleted successfully" });
+    };
 }
