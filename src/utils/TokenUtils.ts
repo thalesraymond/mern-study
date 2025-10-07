@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
+import cookieParser from "cookie-parser";
 
 export default class TokenUtils {
     private static ONE_DAY = 86400;
@@ -11,13 +12,12 @@ export default class TokenUtils {
         return jwt.sign(payload, secret, { expiresIn: expiresIn});
     }
 
-    public static verifyToken(token: string) {
+    public static verifyToken(token: string) : { userId: string; role: string } {
         const secret = process.env.JWT_SECRET || "default_secret";
-
-        try {
-            return jwt.verify(token, secret);
-        } catch {
-            throw new UnauthenticatedError("Invalid token");
-        }
+        
+        const decoded = jwt.verify(token, secret);
+        
+        return decoded as { userId: string; role: string }
+ 
     }
 }

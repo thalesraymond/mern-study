@@ -3,6 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import JobModel from "../models/jobs/JobModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import { JobPayload, JobParams } from "../requests/JobRequest.js";
+import UnauthenticatedError from "../errors/UnauthenticatedError.js";
 
 /**
  * Controller class for handling job-related operations.
@@ -32,7 +33,13 @@ export default class JobController {
         req: Request<{}, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
     ) => {
-        const job = await JobModel.create(req.body);
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
+
+        const jobToCreate = { ...req.body, createdBy: req.user?.userId };
+
+        const job = await JobModel.create(jobToCreate);
 
         return res.status(StatusCodes.CREATED).json({ job });
     };
@@ -58,7 +65,9 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        const updatedJob = await JobModel.findByIdAndUpdate(id, req.body, {
+        const jobToUpdate = { ...req.body, updatedBy: req.user?.userId}
+
+        const updatedJob = await JobModel.findByIdAndUpdate(id, jobToUpdate, {
             new: true,
         });
 

@@ -10,6 +10,8 @@ import jobRoutes from "./routes/JobRoutes.js";
 import registerRoutes from "./routes/RegisterRoutes.js";
 import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
 import authRoutes from "./routes/AuthRoutes.js";
+import AuthMiddleware from "./middleware/AuthMiddleware.js";
+import cookieParser from "cookie-parser";
 
 // end routes
 
@@ -23,7 +25,9 @@ if (process.env.NODE_ENV === "development") {
 
 app.use(express.json());
 
-app.use("/api/v1/jobs", jobRoutes);
+app.use(cookieParser());
+
+app.use("/api/v1/jobs",AuthMiddleware.authenticateUser, jobRoutes);
 
 app.use("/api/v1/auth", authRoutes);
 
