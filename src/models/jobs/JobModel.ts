@@ -1,6 +1,7 @@
-import mangoose from "mongoose";
+import mangoose, { PopulatedDoc, Types } from "mongoose";
 import JobStatus from "./JobStatus.js";
 import JobType from "./JobType.js";
+import { UserSchema } from "../users/UserModel.js";
 
 /**
  * Represents a job entry with company, position, status, type, and location details.
@@ -14,7 +15,7 @@ import JobType from "./JobType.js";
  * @property createdAt - Date when the job entry was created.
  * @property updatedAt - Date when the job entry was last updated.
  */
-interface JobSchema {
+export interface JobSchema {
     id: string;
     company: string;
     position: string;
@@ -23,6 +24,7 @@ interface JobSchema {
     location: string;
     createdAt: Date;
     updatedAt: Date;
+    createdBy: PopulatedDoc<UserSchema>
 }
 
 const jobSchema = new mangoose.Schema<JobSchema>(
@@ -50,6 +52,11 @@ const jobSchema = new mangoose.Schema<JobSchema>(
             default: "Remote",
             required: true,
         },
+        createdBy: {
+            type: Types.ObjectId,
+            ref: "User",
+            required: true,
+        },            
     },
     { timestamps: true }
 );
