@@ -5,6 +5,8 @@ import { UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import PasswordUtils from "../utils/PasswordUtils.js";
+import TokenUtils from "../utils/TokenUtils.js";
+import { AuthResponse } from "../requests/AuthRequest.js";
 
 export default class UserController {
     public register = async (
@@ -37,7 +39,7 @@ export default class UserController {
 
     public auth = async (
         req: Request<{}, {}, { email: string; password: string }>,
-        res: Response<{ user: Omit<UserPayload, "password"> }>
+        res: Response<AuthResponse>
     ) => {
         const { email, password } = req.body;
 
@@ -58,17 +60,15 @@ export default class UserController {
 
         // TODO: GET TOKEN TO RETURN TO CLIENT
 
+        const token = TokenUtils.generateToken({
+            userId: user._id.toString(),
+            role: user.role,
+        });
+
+
+        //return token
         return res.status(StatusCodes.OK).json({
-            user: {
-                id: user._id.toString(),
-                name: user.name,
-                lastName: user.lastName,
-                email: user.email,
-                location: user.location,
-                role: user.role,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt,
-            },
+            token
         });
     };
 }
