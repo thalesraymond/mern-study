@@ -11,14 +11,13 @@ export default class UserController {
         req: Request<{}, {}, UserPayload>,
         res: Response<{ user: Omit<UserPayload, "password"> }>
     ) => {
-
         const existingUser = await UserModel.findOne({ email: req.body.email });
 
         if (existingUser) {
             throw new BadRequestError("E-mail already in use");
         }
-        
-        req.body.password = PasswordUtils.hashPassword(req.body.password);;
+
+        req.body.password = PasswordUtils.hashPassword(req.body.password);
 
         const user = await UserModel.create(req.body);
 
@@ -33,7 +32,6 @@ export default class UserController {
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt,
             },
-
         });
     };
 
@@ -53,7 +51,6 @@ export default class UserController {
             password,
             user.password
         );
-
 
         if (!validPassword) {
             throw new UnauthorizedError("Invalid credentials");

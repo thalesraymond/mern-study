@@ -3,7 +3,7 @@ import CustomError from "./CustomError.js";
 
 export default class UnauthorizedError extends CustomError {
     constructor(message: string) {
-        super(message, StatusCodes.FORBIDDEN);
+        super(message, StatusCodes.UNAUTHORIZED);
 
         this.name = "UnauthorizedError";
     }

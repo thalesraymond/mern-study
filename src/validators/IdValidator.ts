@@ -24,7 +24,7 @@ export default class IdValidator {
                         throw new BadRequestError("no document with that id");
                     }
                 })
-                .withMessage("invalid mongodb id"),
+                .withMessage("job with that id does not exist"),
         ]);
     }
 }
