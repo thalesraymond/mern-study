@@ -65,10 +65,17 @@ export default class UserController {
             role: user.role,
         });
 
+        const jwtExpiration = process.env.JWT_EXPIRES_IN;
+
+        res.cookie("token", token, {
+            httpOnly: true,
+            expires: new Date(Date.now() + Number(jwtExpiration) * 1000),
+            secure: process.env.NODE_ENV === "production",
+        });
 
         //return token
         return res.status(StatusCodes.OK).json({
-            token
+            msg: "User logged in successfully"
         });
     };
 }
