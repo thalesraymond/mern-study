@@ -75,7 +75,16 @@ export default class UserController {
 
         //return token
         return res.status(StatusCodes.OK).json({
-            msg: "User logged in successfully"
+            msg: "User logged in successfully",
         });
+    };
+
+    public logout = async (_req: Request, res: Response) => {
+        res.cookie("token", "", {
+            httpOnly: true,
+            expires: new Date(0),
+        });
+
+        return res.status(StatusCodes.OK).json({ msg: "User logged out" });
     };
 }
