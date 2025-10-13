@@ -2,7 +2,8 @@ import express from "express";
 import JobController from "../controllers/JobController.js";
 import JobValidator from "../validators/JobValidator.js";
 import IdValidator from "../validators/IdValidator.js";
-import JobModel from "../models/jobs/JobModel.js";
+import JobModel, { JobSchema } from "../models/jobs/JobModel.js";
+import OwnershipValidator from "../validators/OwnershipValidator.js";
 
 const jobRoutes = express.Router();
 
@@ -11,19 +12,25 @@ const jobController = new JobController();
 jobRoutes
     .route("/")
     .get(jobController.getAllJobs)
-    .post(...JobValidator.changeJobValidation, jobController.createJob);
+    .post(
+        JobValidator.changeJobValidation(),
+        jobController.createJob
+    );
 
 jobRoutes
     .route("/:id")
-    .get(...IdValidator.validateId(), jobController.getJobById)
+    .get(
+        IdValidator.validateId(),
+        jobController.getJobById
+    )
     .put(
-        ...JobValidator.changeJobValidation,
-        ...IdValidator.validateExistingId(JobModel),
+        JobValidator.changeJobValidation(),
+        IdValidator.validateExistingId(JobModel),
         jobController.updateJob
     )
     .delete(
-        ...IdValidator.validateId(),
-        ...IdValidator.validateExistingId(JobModel),
+        IdValidator.validateId(),
+        IdValidator.validateExistingId(JobModel),
         jobController.deleteJob
     );
 

@@ -27,7 +27,7 @@ export default class JobController {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
-        console.log("req.user: ", req.user);
+
         const jobs = await JobModel.find({ createdBy: req.user.userId });
 
         return res.status(StatusCodes.OK).json({ jobs });
@@ -37,10 +37,6 @@ export default class JobController {
         req: Request<{}, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
     ) => {
-        if (!req.user) {
-            throw new UnauthenticatedError("Authentication Invalid");
-        }
-
         const jobToCreate = { ...req.body, createdBy: req.user?.userId };
 
         const job = await JobModel.create(jobToCreate);
@@ -54,7 +50,12 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        const job: JobPayload | null = await JobModel.findById(id);
+        console.log(req.user);
+
+        const job: JobPayload | null = await JobModel.findOne({
+            _id: id,
+            createdBy: req.user?.userId,
+        });
 
         if (!job) {
             throw new NotFoundError(`Job not found with id ${id}`);
@@ -71,9 +72,13 @@ export default class JobController {
 
         const jobToUpdate = { ...req.body, updatedBy: req.user?.userId };
 
-        const updatedJob = await JobModel.findByIdAndUpdate(id, jobToUpdate, {
-            new: true,
-        });
+        const updatedJob = await JobModel.findOneAndUpdate(
+            { _id: id, createdBy: req.user?.userId },
+            jobToUpdate,
+            {
+                new: true,
+            }
+        );
 
         if (!updatedJob) {
             throw new NotFoundError(`Job not found with id ${id}`);
@@ -88,7 +93,10 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        await JobModel.findByIdAndDelete(id);
+        await JobModel.findOneAndDelete({
+            _id: id,
+            createdBy: req.user?.userId,
+        });
 
         return res
             .status(StatusCodes.OK)
