@@ -24,7 +24,11 @@ export default class JobController {
         req: Request<{}, {}, {}>,
         res: Response<{ jobs: JobPayload[] }>
     ) => {
-        const jobs = await JobModel.find();
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
+        console.log("req.user: ", req.user);
+        const jobs = await JobModel.find({ createdBy: req.user.userId });
 
         return res.status(StatusCodes.OK).json({ jobs });
     };
@@ -65,7 +69,7 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        const jobToUpdate = { ...req.body, updatedBy: req.user?.userId}
+        const jobToUpdate = { ...req.body, updatedBy: req.user?.userId };
 
         const updatedJob = await JobModel.findByIdAndUpdate(id, jobToUpdate, {
             new: true,
