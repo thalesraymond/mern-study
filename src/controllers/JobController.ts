@@ -24,11 +24,7 @@ export default class JobController {
         req: Request<{}, {}, {}>,
         res: Response<{ jobs: JobPayload[] }>
     ) => {
-        if (!req.user) {
-            throw new UnauthenticatedError("Authentication Invalid");
-        }
-
-        const jobs = await JobModel.find({ createdBy: req.user.userId });
+        const jobs = await JobModel.find();
 
         return res.status(StatusCodes.OK).json({ jobs });
     };
@@ -37,6 +33,10 @@ export default class JobController {
         req: Request<{}, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
     ) => {
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
+
         const jobToCreate = { ...req.body, createdBy: req.user?.userId };
 
         const job = await JobModel.create(jobToCreate);
@@ -50,12 +50,7 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        console.log(req.user);
-
-        const job: JobPayload | null = await JobModel.findOne({
-            _id: id,
-            createdBy: req.user?.userId,
-        });
+        const job: JobPayload | null = await JobModel.findById(id);
 
         if (!job) {
             throw new NotFoundError(`Job not found with id ${id}`);
@@ -70,10 +65,10 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        const jobToUpdate = { ...req.body, updatedBy: req.user?.userId };
+        const jobToUpdate = { ...req.body };
 
-        const updatedJob = await JobModel.findOneAndUpdate(
-            { _id: id, createdBy: req.user?.userId },
+        const updatedJob = await JobModel.findByIdAndUpdate(
+            id,
             jobToUpdate,
             {
                 new: true,
@@ -93,10 +88,7 @@ export default class JobController {
     ) => {
         const { id } = req.params;
 
-        await JobModel.findOneAndDelete({
-            _id: id,
-            createdBy: req.user?.userId,
-        });
+        await JobModel.findByIdAndDelete(id);
 
         return res
             .status(StatusCodes.OK)

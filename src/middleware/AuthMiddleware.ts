@@ -1,7 +1,6 @@
 import { NextFunction, Response, Request } from "express";
 import TokenUtils from "../utils/TokenUtils.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
-import UnauthorizedError from "../errors/UnauthorizedError.js";
 
 export default class AuthMiddleware {
     public static authenticateUser(
