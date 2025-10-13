@@ -11,19 +11,19 @@ const jobController = new JobController();
 jobRoutes
     .route("/")
     .get(jobController.getAllJobs)
-    .post(...JobValidator.changeJobValidation, jobController.createJob);
+    .post(JobValidator.changeJobValidation(), jobController.createJob);
 
 jobRoutes
     .route("/:id")
-    .get(...IdValidator.validateId(), jobController.getJobById)
+    .get(IdValidator.validateId(), jobController.getJobById)
     .put(
-        ...JobValidator.changeJobValidation,
-        ...IdValidator.validateExistingId(JobModel),
+        JobValidator.changeJobValidation(),
+        IdValidator.validateExistingId(JobModel),
         jobController.updateJob
     )
     .delete(
-        ...IdValidator.validateId(),
-        ...IdValidator.validateExistingId(JobModel),
+        IdValidator.validateId(),
+        IdValidator.validateExistingId(JobModel),
         jobController.deleteJob
     );
 

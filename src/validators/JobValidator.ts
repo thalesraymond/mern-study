@@ -11,11 +11,11 @@ import ValidationMiddleware from "../middleware/ValidationMiddleware.js";
  *
  * @example
  * // Usage in an Express route
- * router.post('/jobs', JobValidator.changeJobValidation, jobController.createJob);
+ * router.post('/jobs', JobValidator.changeJobValidation(), jobController.createJob);
  */
 export default class JobValidator {
-    public static changeJobValidation =
-        ValidationMiddleware.validationErrorHandler([
+    public static changeJobValidation() {
+        return ValidationMiddleware.validationErrorHandler([
             body("company").notEmpty().withMessage("company is required"),
             body("position").notEmpty().withMessage("position is required"),
             body("status")
@@ -27,4 +27,5 @@ export default class JobValidator {
                 .isIn(Object.values(JobType))
                 .withMessage("invalid job type"),
         ]);
+    }
 }
