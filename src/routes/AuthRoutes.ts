@@ -7,7 +7,9 @@ const authRoutes = express.Router();
 const userController = new UserController();
 
 authRoutes
-    .route("/")
+    .route("/login")
     .post(UserValidator.loginUserValidation, userController.auth);
+
+authRoutes.route("/logout").post(userController.logout);
 
 export default authRoutes;
