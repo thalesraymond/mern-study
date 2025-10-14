@@ -1,41 +1,57 @@
-import { Link } from "react-router-dom";
+import { Link, Form, useNavigation } from "react-router-dom";
 import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow, Logo } from "../components";
 
 const Register = () => {
-  return (
-    <Wrapper>
-      <form className="form">
-        <Logo />
-        <h4>Register</h4>
+    const navigate = useNavigation();
+    console.log(navigate);
+    const isSubmitting = navigate.state === "submitting";
 
-        <FormRow type="text" name="name" defaultValue="john" />
+    return (
+        <Wrapper>
+            <Form method="post" className="form">
+                <Logo />
+                <h4>Register</h4>
 
-        <FormRow
-          type="text"
-          name="lastName"
-          labelText="last name"
-          defaultValue="smith"
-        />
+                <FormRow type="text" name="name" defaultValue="john" />
 
-        <FormRow type="text" name="location" defaultValue="earth" />
+                <FormRow
+                    type="text"
+                    name="lastName"
+                    labelText="last name"
+                    defaultValue="smith"
+                />
 
-        <FormRow type="email" name="email" defaultValue="john@gmail.com" />
+                <FormRow type="text" name="location" defaultValue="earth" />
 
-        <FormRow type="password" name="password" defaultValue="secret123" />
+                <FormRow
+                    type="email"
+                    name="email"
+                    defaultValue="thales@thales.com"
+                />
 
-        <button type="submit" className="btn btn-block">
-          submit
-        </button>
-        <p>
-          Already a member?
-          <Link to="/login" className="member-btn">
-            Login
-          </Link>
-        </p>
-      </form>
-    </Wrapper>
-  );
+                <FormRow
+                    type="password"
+                    name="password"
+                    defaultValue="1q2w3e$R"
+                />
+
+                <button
+                    type="submit"
+                    className="btn btn-block"
+                    disabled={isSubmitting}
+                >
+                    {isSubmitting ? "Submitting..." : "Register"}
+                </button>
+                <p>
+                    Already a member?
+                    <Link to="/login" className="member-btn">
+                        Login
+                    </Link>
+                </p>
+            </Form>
+        </Wrapper>
+    );
 };
 
 export default Register;

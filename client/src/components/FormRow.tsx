@@ -13,6 +13,7 @@ const FormRow = (options: {
                 type={options.type}
                 className="form-input"
                 id={options.name}
+                name={options.name}
                 defaultValue={options.defaultValue || ""}
                 required
             />
