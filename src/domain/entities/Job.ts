@@ -1,4 +1,6 @@
+import { Entity } from "./Entity.js";
 import User from "./User.js";
+import { EntityId } from "./EntityId.js";
 
 export enum JobStatus {
     INTERVIEW = "interview",
@@ -13,7 +15,7 @@ export enum JobType {
     INTERNSHIP = "internship",
 }
 
-export default class Job {
+export default class Job extends Entity {
     public readonly company: string;
     public readonly position: string;
     public readonly status: JobStatus;
@@ -28,6 +30,7 @@ export default class Job {
         jobType,
         location,
         createdBy,
+        id,
     }: {
         company: string;
         position: string;
@@ -35,7 +38,10 @@ export default class Job {
         jobType: JobType;
         location: string;
         createdBy: User;
+        id?: EntityId;
     }) {
+        super();
+        this.id = id;
         this.company = company;
         this.position = position;
         this.status = status;
