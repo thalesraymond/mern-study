@@ -4,7 +4,7 @@ import { FormRow, Logo } from "../components";
 
 const Register = () => {
     const navigate = useNavigation();
-    console.log(navigate);
+
     const isSubmitting = navigate.state === "submitting";
 
     return (
