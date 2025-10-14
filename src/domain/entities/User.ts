@@ -1,19 +1,25 @@
 import Email from "./Email";
 
 export default class User {
-    private readonly name: string;
-    private readonly lastName: string;
-    private readonly email: Email;
-    private readonly password: string;
-    private readonly location: string;
+    public readonly name: string;
+    public readonly lastName: string;
+    public readonly email: Email;
+    public readonly password: string;
+    public readonly location: string;
 
-    constructor(
-        name: string,
-        lastName: string,
-        email: Email,
-        password: string,
-        location: string
-    ) {
+    constructor({
+        name,
+        lastName,
+        email,
+        password,
+        location,
+    }: {
+        name: string;
+        lastName: string;
+        email: Email;
+        password: string;
+        location: string;
+    }) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
@@ -35,25 +41,5 @@ export default class User {
         if (!this.location || this.location.trim() === "") {
             throw new Error("location is required");
         }
-    }
-
-    public getName(): string {
-        return this.name;
-    }
-
-    public getLastName(): string {
-        return this.lastName;
-    }
-
-    public getEmail(): Email {
-        return this.email;
-    }
-
-    public getPassword(): string {
-        return this.password;
-    }
-
-    public getLocation(): string {
-        return this.location;
     }
 }

@@ -14,21 +14,28 @@ export enum JobType {
 }
 
 export default class Job {
-    private readonly company: string;
-    private readonly position: string;
-    private readonly status: JobStatus;
-    private readonly jobType: JobType;
-    private readonly location: string;
-    private readonly createdBy: User;
+    public readonly company: string;
+    public readonly position: string;
+    public readonly status: JobStatus;
+    public readonly jobType: JobType;
+    public readonly location: string;
+    public readonly createdBy: User;
 
-    constructor(
-        company: string,
-        position: string,
-        status: JobStatus,
-        jobType: JobType,
-        location: string,
-        createdBy: User
-    ) {
+    constructor({
+        company,
+        position,
+        status,
+        jobType,
+        location,
+        createdBy,
+    }: {
+        company: string;
+        position: string;
+        status: JobStatus;
+        jobType: JobType;
+        location: string;
+        createdBy: User;
+    }) {
         this.company = company;
         this.position = position;
         this.status = status;
@@ -48,29 +55,5 @@ export default class Job {
         if (!this.location || this.location.trim() === "") {
             throw new Error("location is required");
         }
-    }
-
-    public getCompany(): string {
-        return this.company;
-    }
-
-    public getPosition(): string {
-        return this.position;
-    }
-
-    public getStatus(): JobStatus {
-        return this.status;
-    }
-
-    public getJobType(): JobType {
-        return this.jobType;
-    }
-
-    public getLocation(): string {
-        return this.location;
-    }
-
-    public getCreatedBy(): User {
-        return this.createdBy;
     }
 }
