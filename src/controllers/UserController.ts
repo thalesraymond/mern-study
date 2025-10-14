@@ -1,18 +1,19 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import UserModel from "../models/users/UserModel.js";
-import { UserPayload } from "../requests/UserRequest.js";
+import UserModel, { UserSchema } from "../models/users/UserModel.js";
+import { UpdateUserPayload, UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import PasswordUtils from "../utils/PasswordUtils.js";
 import TokenUtils from "../utils/TokenUtils.js";
 import { AuthResponse } from "../requests/AuthRequest.js";
+import JobModel from "../models/jobs/JobModel.js";
 
 export default class UserController {
-    public register = async (
+    public async register(
         req: Request<{}, {}, UserPayload>,
         res: Response<{ user: Omit<UserPayload, "password"> }>
-    ) => {
+    ) {
         const existingUser = await UserModel.findOne({ email: req.body.email });
 
         if (existingUser) {
@@ -35,12 +36,12 @@ export default class UserController {
                 updatedAt: user.updatedAt,
             },
         });
-    };
+    }
 
-    public auth = async (
+    public async auth(
         req: Request<{}, {}, { email: string; password: string }>,
         res: Response<AuthResponse>
-    ) => {
+    ) {
         const { email, password } = req.body;
 
         const user = await UserModel.findOne({ email });
@@ -58,8 +59,6 @@ export default class UserController {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        // TODO: GET TOKEN TO RETURN TO CLIENT
-
         const token = TokenUtils.generateToken({
             userId: user._id.toString(),
             role: user.role,
@@ -73,18 +72,49 @@ export default class UserController {
             secure: process.env.NODE_ENV === "production",
         });
 
-        //return token
         return res.status(StatusCodes.OK).json({
             msg: "User logged in successfully",
         });
-    };
+    }
 
-    public logout = async (_req: Request, res: Response) => {
+    public async logout(_req: Request, res: Response) {
         res.cookie("token", "", {
             httpOnly: true,
             expires: new Date(0),
         });
 
         return res.status(StatusCodes.OK).json({ msg: "User logged out" });
-    };
+    }
+
+    public async getCurrentUser(req: Request, res: Response) {
+        const user: UserSchema | null = await UserModel.findById(
+            req.user?.userId
+        ).select("-password");
+
+        if (!user) {
+            throw new UnauthorizedError("Invalid credentials");
+        }
+
+        return res.status(StatusCodes.OK).json({ user });
+    }
+
+    public async updateUser(
+        req: Request<{}, {}, UpdateUserPayload>,
+        res: Response
+    ) {
+        await UserModel.findByIdAndUpdate(req.user?.userId, req.body, {
+            new: true,
+        });
+
+        return res.status(StatusCodes.NO_CONTENT).json({});
+    }
+
+    // TODO: This should not be here but the course states that should be, will refactor later.
+    public async getAppStats(req: Request, res: Response) {
+        const users = await UserModel.countDocuments();
+
+        const jobs = await JobModel.countDocuments();
+
+        return res.status(StatusCodes.OK).json({ users, jobs });
+    }
 }

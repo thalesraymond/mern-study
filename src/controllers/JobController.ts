@@ -20,19 +20,19 @@ import UnauthenticatedError from "../errors/UnauthenticatedError.js";
  * @class JobController
  */
 export default class JobController {
-    public getAllJobs = async (
+    public async getAllJobs(
         req: Request<{}, {}, {}>,
         res: Response<{ jobs: JobPayload[] }>
-    ) => {
+    ) {
         const jobs = await JobModel.find();
 
         return res.status(StatusCodes.OK).json({ jobs });
-    };
+    }
 
-    public createJob = async (
+    public async createJob(
         req: Request<{}, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
-    ) => {
+    ) {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
@@ -42,13 +42,13 @@ export default class JobController {
         const job = await JobModel.create(jobToCreate);
 
         return res.status(StatusCodes.CREATED).json({ job });
-    };
+    }
 
-    public getJobById = async (
+    public async getJobById(
         req: Request<JobParams>,
         res: Response<{ job: JobPayload }>
-    ) => {
-        const { id } = req.params;
+    ) {
+        const {id} = req.params;
 
         const job: JobPayload | null = await JobModel.findById(id);
 
@@ -56,13 +56,13 @@ export default class JobController {
             throw new NotFoundError(`Job not found with id ${id}`);
         }
 
-        return res.status(StatusCodes.OK).json({ job });
-    };
+        return res.status(StatusCodes.OK).json({job});
+    }
 
-    public updateJob = async (
+    public async updateJob(
         req: Request<JobParams, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
-    ) => {
+    ) {
         const { id } = req.params;
 
         const jobToUpdate = { ...req.body };
@@ -80,12 +80,12 @@ export default class JobController {
         }
 
         return res.status(StatusCodes.OK).json({ job: updatedJob });
-    };
+    }
 
-    public deleteJob = async (
+    public async deleteJob(
         req: Request<JobParams>,
         res: Response<{ msg: string }>
-    ) => {
+    ) {
         const { id } = req.params;
 
         await JobModel.findByIdAndDelete(id);
@@ -93,5 +93,5 @@ export default class JobController {
         return res
             .status(StatusCodes.OK)
             .json({ msg: "Job deleted successfully" });
-    };
+    }
 }

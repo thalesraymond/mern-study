@@ -8,6 +8,6 @@ const userController = new UserController();
 
 registerRoutes
     .route("/")
-    .post(UserValidator.registerUserValidation, userController.register);
+    .post(UserValidator.registerUserValidation(), userController.register);
 
 export default registerRoutes;

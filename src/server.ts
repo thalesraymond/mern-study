@@ -12,6 +12,7 @@ import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
 import authRoutes from "./routes/AuthRoutes.js";
 import AuthMiddleware from "./middleware/AuthMiddleware.js";
 import cookieParser from "cookie-parser";
+import userRoutes from "./routes/UserRoutes.js";
 
 // end routes
 
@@ -27,11 +28,13 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-app.use("/api/v1/jobs",AuthMiddleware.authenticateUser, jobRoutes);
-
 app.use("/api/v1/auth", authRoutes);
 
 app.use("/api/v1/register", registerRoutes);
+
+app.use("/api/v1/jobs", AuthMiddleware.authenticateUser, jobRoutes);
+
+app.use("/api/v1/user", AuthMiddleware.authenticateUser, userRoutes);
 
 app.use((_req, res) => {
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
