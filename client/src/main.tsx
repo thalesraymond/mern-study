@@ -3,6 +3,12 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
+
+fetch("/api/v1/test")
+.then(res => res.json())
+.then(data => console.log(data))
+.catch(err => console.log(err))
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
