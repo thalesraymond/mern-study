@@ -2,6 +2,8 @@ import { Link, Form, useNavigation } from "react-router-dom";
 import Wrapper from "../assets/wrappers/RegisterAndLoginPage";
 import { FormRow, Logo } from "../components";
 
+
+
 const Register = () => {
     const navigate = useNavigation();
 
