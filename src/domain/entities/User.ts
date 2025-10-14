@@ -1,6 +1,7 @@
 import Email from "./Email.js";
+import { Entity } from "./Entity.js";
 
-export default class User {
+export default class User extends Entity {
     public readonly name: string;
     public readonly lastName: string;
     public readonly email: Email;
@@ -20,6 +21,7 @@ export default class User {
         password: string;
         location: string;
     }) {
+        super();
         this.name = name;
         this.lastName = lastName;
         this.email = email;
