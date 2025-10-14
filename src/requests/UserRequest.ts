@@ -14,3 +14,10 @@ export interface UserPayload {
 export interface UserParams {
     id: string;
 }
+
+export interface UpdateUserPayload {
+    name: string;
+    lastName?: string;
+    email: string;
+    location?: string;
+}
