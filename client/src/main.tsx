@@ -2,12 +2,12 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import apiClient from './utils/ApiClient'
 
 
-fetch("/api/v1/test")
-.then(res => res.json())
-.then(data => console.log(data))
-.catch(err => console.log(err))
+
+const response = await apiClient.get('/test')
+console.log(response)
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

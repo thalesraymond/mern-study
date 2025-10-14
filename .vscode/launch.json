@@ -5,12 +5,10 @@
       "type": "node",
       "request": "launch",
       "name": "Debug Server (TSX)",
-      "runtimeExecutable": "npx",
+      "runtimeExecutable": "npm",
       "runtimeArgs": [
-        "tsx",
-        "--env-file=.env",
-        "--watch",
-        "src/server.ts"
+        "run",
+        "dev"
       ],
       "skipFiles": ["<node_internals>/**"],
       "envFile": "${workspaceFolder}/.env",
