@@ -14,13 +14,9 @@ export default class JobController {
         private readonly userRepository: IUserRepository
     ) {}
 
-    public getAllJobs = async (
-        req: Request<{}, {}, {}>,
-        res: Response<{ jobs: JobPayload[] }>
-    ) => {
-        const jobs = await this.jobRepository.listAll();
-        const jobPayloads = jobs.map((job) => ({
-            id: job.id!.toString(),
+    private toJobPayload(job: Job): JobPayload {
+        return {
+            id: job.id.toString(),
             company: job.company,
             position: job.position,
             status: job.status,
@@ -29,7 +25,15 @@ export default class JobController {
             createdAt: job.createdAt,
             updatedAt: job.updatedAt,
             createdBy: job.createdBy.id?.toString(),
-        }));
+        };
+    }
+
+    public getAllJobs = async (
+        req: Request<{}, {}, {}>,
+        res: Response<{ jobs: JobPayload[] }>
+    ) => {
+        const jobs = await this.jobRepository.listAll();
+        const jobPayloads = jobs.map((job) => this.toJobPayload(job));
         return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };
 
@@ -61,17 +65,7 @@ export default class JobController {
         const job = await this.jobRepository.create(jobToCreate);
 
         return res.status(StatusCodes.CREATED).json({
-            job: {
-                id: job.id!.toString(),
-                company: job.company,
-                position: job.position,
-                status: job.status,
-                jobType: job.jobType,
-                location: job.location,
-                createdAt: job.createdAt,
-                updatedAt: job.updatedAt,
-                createdBy: job.createdBy.id?.toString(),
-            },
+            job: this.toJobPayload(job),
         });
     };
 
@@ -87,17 +81,7 @@ export default class JobController {
         }
 
         return res.status(StatusCodes.OK).json({
-            job: {
-                id: job.id!.toString(),
-                company: job.company,
-                position: job.position,
-                status: job.status,
-                jobType: job.jobType,
-                location: job.location,
-                createdAt: job.createdAt,
-                updatedAt: job.updatedAt,
-                createdBy: job.createdBy.id?.toString(),
-            },
+            job: this.toJobPayload(job),
         });
     };
 
@@ -127,17 +111,7 @@ export default class JobController {
         const updatedJob = await this.jobRepository.update(jobToUpdate);
 
         return res.status(StatusCodes.OK).json({
-            job: {
-                id: updatedJob.id!.toString(),
-                company: updatedJob.company,
-                position: updatedJob.position,
-                status: updatedJob.status,
-                jobType: updatedJob.jobType,
-                location: updatedJob.location,
-                createdAt: updatedJob.createdAt,
-                updatedAt: updatedJob.updatedAt,
-                createdBy: updatedJob.createdBy.id?.toString(),
-            },
+            job: this.toJobPayload(updatedJob),
         });
     };
 
