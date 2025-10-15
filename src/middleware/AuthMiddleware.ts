@@ -28,7 +28,9 @@ export default class AuthMiddleware {
     public static authorizePermissions(...roles: string[]) {
         return (req: Request, res: Response, next: NextFunction) => {
             if (!roles.includes(req.user?.role ?? "")) {
-                throw new UnauthenticatedError("Unauthorized to access this route");
+                throw new UnauthenticatedError(
+                    "Unauthorized to access this route"
+                );
             }
 
             next();

@@ -5,6 +5,9 @@ export interface JobPayload {
     status: string;
     jobType: string;
     location: string;
+    createdAt: Date;
+    updatedAt: Date;
+    createdBy: string;
 }
 
 export interface JobParams {
