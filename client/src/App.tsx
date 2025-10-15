@@ -1,6 +1,19 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { DashboardLayout, HomeLayout, Landing, Login, Register, Error, AddJob, Stats, AllJobs, Profile, Admin } from "./pages";
+import {
+    DashboardLayout,
+    HomeLayout,
+    Landing,
+    Login,
+    Register,
+    Error,
+    AddJob,
+    Stats,
+    AllJobs,
+    Profile,
+    Admin,
+} from "./pages";
 import { registerAction, loginAction } from "./actions";
+import { dashboardLoader } from "./loaders";
 
 const router = createBrowserRouter([
     {
@@ -25,6 +38,7 @@ const router = createBrowserRouter([
             {
                 path: "dashboard",
                 element: <DashboardLayout />,
+                loader: dashboardLoader,
                 children: [
                     {
                         index: true,

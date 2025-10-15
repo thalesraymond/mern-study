@@ -97,6 +97,7 @@ export default class UserController {
                 lastName: user.lastName,
                 email: user.email.getValue(),
                 location: user.location,
+                role: user.role.toString(),
             },
         });
     };
