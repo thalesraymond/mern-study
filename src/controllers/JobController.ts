@@ -28,26 +28,18 @@ export default class JobController {
         };
     }
 
-    public getAllJobs = async (
-        req: Request<{}, {}, {}>,
-        res: Response<{ jobs: JobPayload[] }>
-    ) => {
+    public getAllJobs = async (req: Request<{}, {}, {}>, res: Response<{ jobs: JobPayload[] }>) => {
         const jobs = await this.jobRepository.listAll();
         const jobPayloads = jobs.map((job) => this.toJobPayload(job));
         return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };
 
-    public createJob = async (
-        req: Request<{}, {}, JobPayload>,
-        res: Response<{ job: JobPayload }>
-    ) => {
+    public createJob = async (req: Request<{}, {}, JobPayload>, res: Response<{ job: JobPayload }>) => {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
 
-        const createdBy = await this.userRepository.getById(
-            new EntityId(req.user.userId)
-        );
+        const createdBy = await this.userRepository.getById(new EntityId(req.user.userId));
         if (!createdBy) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
@@ -69,10 +61,7 @@ export default class JobController {
         });
     };
 
-    public getJobById = async (
-        req: Request<JobParams>,
-        res: Response<{ job: JobPayload }>
-    ) => {
+    public getJobById = async (req: Request<JobParams>, res: Response<{ job: JobPayload }>) => {
         const { id } = req.params;
         const job = await this.jobRepository.getById(new EntityId(id));
 
@@ -85,10 +74,7 @@ export default class JobController {
         });
     };
 
-    public updateJob = async (
-        req: Request<JobParams, {}, Partial<JobPayload>>,
-        res: Response<{ job: JobPayload }>
-    ) => {
+    public updateJob = async (req: Request<JobParams, {}, Partial<JobPayload>>, res: Response<{ job: JobPayload }>) => {
         const { id } = req.params;
 
         const existingJob = await this.jobRepository.getById(new EntityId(id));
@@ -115,14 +101,9 @@ export default class JobController {
         });
     };
 
-    public deleteJob = async (
-        req: Request<JobParams>,
-        res: Response<{ msg: string }>
-    ) => {
+    public deleteJob = async (req: Request<JobParams>, res: Response<{ msg: string }>) => {
         const { id } = req.params;
         await this.jobRepository.delete(new EntityId(id));
-        return res
-            .status(StatusCodes.OK)
-            .json({ msg: "Job deleted successfully" });
+        return res.status(StatusCodes.OK).json({ msg: "Job deleted successfully" });
     };
 }

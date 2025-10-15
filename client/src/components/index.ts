@@ -6,3 +6,4 @@ export { default as Navbar } from "./Navbar";
 export { default as NavLinks } from "./NavLinks";
 export { default as LogoutContainer } from "./LogoutContainer";
 export { default as ThemeToggle } from "./ThemeToggle";
+export { default as SubmitButton } from "./SubmitButton"
