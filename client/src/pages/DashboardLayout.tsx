@@ -1,61 +1,76 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
 import { useState } from "react";
 import DashboardContext from "./DashboardContext";
 import { getSavedDarkTheme } from "../DarkThemeSwitcher";
+import apiClient from "../utils/ApiClient";
+import { toast } from "react-toastify";
 
 const DashboardLayout = () => {
-  // TODO: Temp
-  const user = { name: "john" };
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(getSavedDarkTheme());
+    const navigate = useNavigate();
+    const loaderData: {
+        user: {
+            name: string;
+            lastName: string;
+            location: string;
+            email: string;
+            role: string;
+        };
+    } = useLoaderData();
+    const user = loaderData.user;
+    const [showSidebar, setShowSidebar] = useState(false);
+    const [isDarkTheme, setIsDarkTheme] = useState(getSavedDarkTheme());
 
-  const toggleDarkTheme = () => {
-    console.log("toggle dark theme");
+    const toggleDarkTheme = () => {
+        console.log("toggle dark theme");
 
-    const newDarkTheme = !isDarkTheme;
+        const newDarkTheme = !isDarkTheme;
 
-    setIsDarkTheme(newDarkTheme);
+        setIsDarkTheme(newDarkTheme);
 
-    document.body.classList.toggle("dark-theme", newDarkTheme);
+        document.body.classList.toggle("dark-theme", newDarkTheme);
 
-    localStorage.setItem("isDarkTheme", JSON.stringify(newDarkTheme));
-  };
+        localStorage.setItem("isDarkTheme", JSON.stringify(newDarkTheme));
+    };
 
-  const toggleSidebar = () => {
-    setShowSidebar(!showSidebar);
-  };
+    const toggleSidebar = () => {
+        setShowSidebar(!showSidebar);
+    };
 
-  const logoutUser = async () => {
-    console.log("logout user");
-  };
+    const logoutUser = async () => {
+        navigate("/");
 
-  return (
-    <DashboardContext.Provider
-      value={{
-        user,
-        showSidebar,
-        isDarkTheme,
-        toggleDarkTheme,
-        toggleSidebar,
-        logoutUser,
-      }}
-    >
-      <Wrapper>
-        <main className="dashboard">
-          <SmallSidebar></SmallSidebar>
-          <BigSidebar></BigSidebar>
-          <div>
-            <Navbar></Navbar>
-            <div className="dashboard-page">
-              <Outlet />
-            </div>
-          </div>
-        </main>
-      </Wrapper>
-    </DashboardContext.Provider>
-  );
+        apiClient.get("/auth/logout");
+
+        toast.success("User logged out successfully");
+    };
+
+    return (
+        <DashboardContext.Provider
+            value={{
+                user,
+                showSidebar,
+                isDarkTheme,
+                toggleDarkTheme,
+                toggleSidebar,
+                logoutUser,
+            }}
+        >
+            <Wrapper>
+                <main className="dashboard">
+                    <SmallSidebar></SmallSidebar>
+                    <BigSidebar></BigSidebar>
+                    <div>
+                        <Navbar></Navbar>
+                        <div className="dashboard-page">
+                            <Outlet context={{ user }} />
+                        </div>
+                    </div>
+                </main>
+            </Wrapper>
+        </DashboardContext.Provider>
+    );
 };
 
 export default DashboardLayout;

@@ -18,7 +18,10 @@ export default class UserController {
         private readonly jobRepository: IJobRepository
     ) {}
 
-    public register = async (req: Request<{}, {}, UserPayload>, res: Response<{ user: Omit<UserPayload, "password"> }>) => {
+    public register = async (
+        req: Request<{}, {}, UserPayload>,
+        res: Response<{ user: Omit<UserPayload, "password"> }>
+    ) => {
         const useCase = new RegisterUserUseCase(this.userRepository);
 
         const createdUser = await useCase.execute({
@@ -94,6 +97,7 @@ export default class UserController {
                 lastName: user.lastName,
                 email: user.email.getValue(),
                 location: user.location,
+                role: user.role.toString(),
             },
         });
     };

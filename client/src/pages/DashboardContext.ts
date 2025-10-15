@@ -2,13 +2,15 @@ import { createContext, useContext } from "react";
 
 const DashboardContext = createContext({
     user: {
-        name: ""
+        name: "",
     },
     showSidebar: false,
     isDarkTheme: false,
     toggleDarkTheme: () => {},
     toggleSidebar: () => {},
-    logoutUser: () => {}
+    logoutUser: () => {
+
+    },
 });
 
 export default DashboardContext;
