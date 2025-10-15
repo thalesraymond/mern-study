@@ -5,6 +5,7 @@ import Email from "../../domain/entities/Email.js";
 import { UserSchema } from "../models/users/UserModel.js";
 import UserRole from "../../domain/entities/UserRole.js";
 import { HydratedDocument } from "mongoose";
+import UserPassword from "../../domain/entities/UserPassword.js";
 
 export default class UserAdapter extends Adapter<User, UserSchema> {
     public override toDomain(raw: HydratedDocument<UserSchema>): User {
@@ -13,7 +14,7 @@ export default class UserAdapter extends Adapter<User, UserSchema> {
             name: raw.name,
             lastName: raw.lastName,
             email: Email.create(raw.email),
-            password: raw.password,
+            password: UserPassword.create(raw.password),
             location: raw.location,
             role: raw.role as UserRole,
             createdAt: raw.createdAt,
@@ -25,8 +26,8 @@ export default class UserAdapter extends Adapter<User, UserSchema> {
         return {
             name: user.name,
             lastName: user.lastName,
-            email: user.email.toString(),
-            password: user.password,
+            email: user.email.getValue(),
+            password: user.password.hashedPassword,
             location: user.location,
             role: user.role,
             createdAt: user.createdAt,
