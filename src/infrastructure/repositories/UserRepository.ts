@@ -11,7 +11,7 @@ export default class UserRepository extends Repository<User> implements IUserRep
     }
 
     async findByEmail(email: Email): Promise<User | null> {
-        const document = await this.model.findOne({ email: email.getValue() });
+        const document = await this.model.findOne({ email: { $eq: email.getValue() } });
         if (!document) {
             return null;
         }
