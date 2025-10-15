@@ -16,7 +16,10 @@ export default class Repository<
     ) {}
 
     async listAll(): Promise<TDomain[]> {
-        const documents = await this.model.find().populate("createdBy");
+        const documents = await this.model.find().populate({
+            path: "createdBy",
+            strictPopulate: false,
+        });
         const results = await Promise.all(
             documents.map((doc) => this.adapter.toDomain(doc))
         );
@@ -26,7 +29,10 @@ export default class Repository<
     async getById(id: EntityId): Promise<TDomain | null> {
         const document = await this.model
             .findById(id.toString())
-            .populate("createdBy");
+            .populate({
+                path: "createdBy",
+                strictPopulate: false,
+            });
         if (!document) {
             return null;
         }

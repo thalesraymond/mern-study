@@ -1,13 +1,14 @@
 import Email from "./Email.js";
 import { Entity } from "./Entity.js";
 import { EntityId } from "./EntityId.js";
+import UserPassword from "./UserPassword.js";
 import UserRole from "./UserRole.js";
 
 export default class User extends Entity {
     public readonly name: string;
     public readonly lastName: string;
     public readonly email: Email;
-    public readonly password: string;
+    public readonly password: UserPassword;
     public readonly location: string;
     public readonly role: UserRole;
 
@@ -25,7 +26,7 @@ export default class User extends Entity {
         name: string;
         lastName: string;
         email: Email;
-        password: string;
+        password: UserPassword;
         location: string;
         id?: EntityId;
         role: UserRole;
@@ -52,9 +53,6 @@ export default class User extends Entity {
         }
         if (!this.lastName || this.lastName.trim() === "") {
             throw new Error("last name is required");
-        }
-        if (!this.password || this.password.length < 6) {
-            throw new Error("password must be at least 6 characters long");
         }
         if (!this.location || this.location.trim() === "") {
             throw new Error("location is required");

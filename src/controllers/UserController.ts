@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { UpdateUserPayload, UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
-import BadRequestError from "../errors/BadRequestError.js";
 import PasswordUtils from "../utils/PasswordUtils.js";
 import TokenUtils from "../utils/TokenUtils.js";
 import { AuthResponse } from "../requests/AuthRequest.js";
@@ -11,7 +10,7 @@ import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import Email from "../domain/entities/Email.js";
 import User from "../domain/entities/User.js";
 import { EntityId } from "../domain/entities/EntityId.js";
-import UserRole from "../domain/entities/UserRole.js";
+import RegisterUserUseCase from "../appUseCases/RegisterUserUseCase.js";
 
 export default class UserController {
     constructor(
@@ -19,50 +18,23 @@ export default class UserController {
         private readonly jobRepository: IJobRepository
     ) {}
 
-    public register = async (
-        req: Request<{}, {}, UserPayload>,
-        res: Response<{ user: Omit<UserPayload, "password"> }>
-    ) => {
-        const existingUser = await this.userRepository.findByEmail(
-            Email.create(req.body.email)
-        );
+    public register = async (req: Request<{}, {}, UserPayload>, res: Response<{ user: Omit<UserPayload, "password"> }>) => {
+        const useCase = new RegisterUserUseCase(this.userRepository);
 
-        if (existingUser) {
-            throw new BadRequestError("E-mail already in use");
-        }
-
-        const hashedPassword = PasswordUtils.hashPassword(req.body.password);
-        const userToCreate = new User({
+        const createdUser = await useCase.execute({
             name: req.body.name,
-            lastName: req.body.lastName || "default",
-            location: req.body.location || "default location",
-            email: Email.create(req.body.email),
-            password: hashedPassword,
-            role: UserRole.USER, // Default role
-            createdAt: new Date(), // Placeholder
-            updatedAt: new Date(), // Placeholder
+            lastName: req.body.lastName ?? "",
+            email: req.body.email,
+            password: req.body.password,
+            location: req.body.location ?? "",
         });
 
-        const user = await this.userRepository.create(userToCreate);
-
         return res.status(StatusCodes.CREATED).json({
-            user: {
-                id: user.id?.toString(),
-                name: user.name,
-                lastName: user.lastName,
-                email: user.email.getValue(),
-                location: user.location,
-                role: user.role,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt,
-            },
+            user: createdUser,
         });
     };
 
-    public auth = async (
-        req: Request<{}, {}, { email: string; password: string }>,
-        res: Response<AuthResponse>
-    ) => {
+    public auth = async (req: Request<{}, {}, { email: string; password: string }>, res: Response<AuthResponse>) => {
         const { email, password } = req.body;
 
         const user = await this.userRepository.findByEmail(Email.create(email));
@@ -71,10 +43,7 @@ export default class UserController {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        const validPassword = await PasswordUtils.comparePassword(
-            password,
-            user.password
-        );
+        const validPassword = await PasswordUtils.comparePassword(password, user.password.hashedPassword);
 
         if (!validPassword) {
             throw new UnauthorizedError("Invalid credentials");
@@ -112,9 +81,7 @@ export default class UserController {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        const user = await this.userRepository.getById(
-            new EntityId(req.user.userId)
-        );
+        const user = await this.userRepository.getById(new EntityId(req.user.userId));
 
         if (!user) {
             throw new UnauthorizedError("Invalid credentials");
@@ -131,17 +98,12 @@ export default class UserController {
         });
     };
 
-    public updateUser = async (
-        req: Request<{}, {}, UpdateUserPayload>,
-        res: Response
-    ) => {
+    public updateUser = async (req: Request<{}, {}, UpdateUserPayload>, res: Response) => {
         if (!req.user?.userId) {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        const userToUpdate = await this.userRepository.getById(
-            new EntityId(req.user.userId)
-        );
+        const userToUpdate = await this.userRepository.getById(new EntityId(req.user.userId));
 
         if (!userToUpdate) {
             throw new UnauthorizedError("Invalid credentials");
