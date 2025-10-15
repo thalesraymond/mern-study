@@ -31,6 +31,8 @@ export default class Job extends Entity {
         location,
         createdBy,
         id,
+        createdAt,
+        updatedAt,
     }: {
         company: string;
         position: string;
@@ -39,9 +41,14 @@ export default class Job extends Entity {
         location: string;
         createdBy: User;
         id?: EntityId;
+        createdAt: Date;
+        updatedAt: Date;
     }) {
-        super();
-        this.id = id;
+        super({
+            id,
+            createdAt,
+            updatedAt,
+        });
         this.company = company;
         this.position = position;
         this.status = status;
@@ -60,6 +67,15 @@ export default class Job extends Entity {
         }
         if (!this.location || this.location.trim() === "") {
             throw new Error("location is required");
+        }
+        if (!this.createdBy) {
+            throw new Error("createdBy is required");
+        }
+        if (!this.status) {
+            throw new Error("status is required");
+        }
+        if (!this.jobType) {
+            throw new Error("jobType is required");
         }
     }
 }

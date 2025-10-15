@@ -26,6 +26,9 @@ export default class JobController {
             status: job.status,
             jobType: job.jobType,
             location: job.location,
+            createdAt: job.createdAt,
+            updatedAt: job.updatedAt,
+            createdBy: job.createdBy.id?.toString(),
         }));
         return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };
@@ -51,6 +54,8 @@ export default class JobController {
             location: req.body.location,
             status: req.body.status as JobStatus,
             jobType: req.body.jobType as JobType,
+            createdAt: new Date(),
+            updatedAt: new Date(),
             createdBy,
         });
         const job = await this.jobRepository.create(jobToCreate);
@@ -63,6 +68,9 @@ export default class JobController {
                 status: job.status,
                 jobType: job.jobType,
                 location: job.location,
+                createdAt: job.createdAt,
+                updatedAt: job.updatedAt,
+                createdBy: job.createdBy.id?.toString(),
             },
         });
     };
@@ -86,12 +94,15 @@ export default class JobController {
                 status: job.status,
                 jobType: job.jobType,
                 location: job.location,
+                createdAt: job.createdAt,
+                updatedAt: job.updatedAt,
+                createdBy: job.createdBy.id?.toString(),
             },
         });
     };
 
     public updateJob = async (
-        req: Request<JobParams, {}, JobPayload>,
+        req: Request<JobParams, {}, Partial<JobPayload>>,
         res: Response<{ job: JobPayload }>
     ) => {
         const { id } = req.params;
@@ -102,12 +113,14 @@ export default class JobController {
         }
 
         const jobToUpdate = new Job({
-            company: req.body.company,
-            position: req.body.position,
-            location: req.body.location,
-            status: req.body.status as JobStatus,
-            jobType: req.body.jobType as JobType,
+            company: req.body.company ?? existingJob.company,
+            position: req.body.position ?? existingJob.position,
+            location: req.body.location ?? existingJob.location,
+            status: (req.body.status ?? existingJob.status) as JobStatus,
+            jobType: (req.body.jobType ?? existingJob.jobType) as JobType,
             createdBy: existingJob.createdBy,
+            createdAt: existingJob.createdAt,
+            updatedAt: new Date(),
             id: existingJob.id,
         });
 
@@ -121,6 +134,9 @@ export default class JobController {
                 status: updatedJob.status,
                 jobType: updatedJob.jobType,
                 location: updatedJob.location,
+                createdAt: updatedJob.createdAt,
+                updatedAt: updatedJob.updatedAt,
+                createdBy: updatedJob.createdBy.id?.toString(),
             },
         });
     };

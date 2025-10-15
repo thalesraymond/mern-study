@@ -1,7 +1,7 @@
 import { body } from "express-validator";
 import ValidationMiddleware from "../middleware/ValidationMiddleware.js";
 import { Request } from "express";
-import UserModel from "../models/users/UserModel.js";
+import UserModel from "../infrastructure/models/users/UserModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
 
 export default class UserValidator {

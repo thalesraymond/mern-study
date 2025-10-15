@@ -1,11 +1,14 @@
-import { IUserRepository } from '../../domain/repositories/IUserRepository.js';
-import User from '../../domain/entities/User.js';
-import Repository from './Repository.js';
-import UserModel from '../../models/users/UserModel.js';
-import UserAdapter from '../../adapters/UserAdapter.js';
-import Email from '../../domain/entities/Email.js';
+import { IUserRepository } from "../../domain/repositories/IUserRepository.js";
+import User from "../../domain/entities/User.js";
+import Repository from "./Repository.js";
+import UserModel, { UserSchema } from "../models/users/UserModel.js";
+import UserAdapter from "../adapters/UserAdapter.js";
+import Email from "../../domain/entities/Email.js";
 
-export default class UserRepository extends Repository<User> implements IUserRepository {
+export default class UserRepository
+    extends Repository<User, UserSchema>
+    implements IUserRepository
+{
     constructor() {
         super(UserModel, new UserAdapter());
     }
@@ -15,7 +18,7 @@ export default class UserRepository extends Repository<User> implements IUserRep
         if (!document) {
             return null;
         }
-        return this.adapter.toDomain(document.toObject());
+        return this.adapter.toDomain(document);
     }
 
     async count(): Promise<number> {

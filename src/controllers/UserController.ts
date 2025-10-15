@@ -11,6 +11,7 @@ import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import Email from "../domain/entities/Email.js";
 import User from "../domain/entities/User.js";
 import { EntityId } from "../domain/entities/EntityId.js";
+import UserRole from "../domain/entities/UserRole.js";
 
 export default class UserController {
     constructor(
@@ -33,24 +34,27 @@ export default class UserController {
         const hashedPassword = PasswordUtils.hashPassword(req.body.password);
         const userToCreate = new User({
             name: req.body.name,
-            lastName: req.body.lastName || 'default',
-            location: req.body.location || 'default location',
+            lastName: req.body.lastName || "default",
+            location: req.body.location || "default location",
             email: Email.create(req.body.email),
             password: hashedPassword,
+            role: UserRole.USER, // Default role
+            createdAt: new Date(), // Placeholder
+            updatedAt: new Date(), // Placeholder
         });
 
         const user = await this.userRepository.create(userToCreate);
 
         return res.status(StatusCodes.CREATED).json({
             user: {
-                id: user.id!.toString(),
+                id: user.id?.toString(),
                 name: user.name,
                 lastName: user.lastName,
                 email: user.email.getValue(),
                 location: user.location,
-                role: "user", // Default role
-                createdAt: new Date(), // Placeholder
-                updatedAt: new Date(), // Placeholder
+                role: user.role,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt,
             },
         });
     };
@@ -77,8 +81,8 @@ export default class UserController {
         }
 
         const token = TokenUtils.generateToken({
-            userId: user.id!.toString(),
-            role: "user", // Default role
+            userId: user.id.toString(),
+            role: user.role.toString(),
         });
 
         const jwtExpiration = process.env.JWT_EXPIRES_IN;

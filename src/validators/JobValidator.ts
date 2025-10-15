@@ -1,6 +1,6 @@
 import { body } from "express-validator";
-import JobStatus from "../models/jobs/JobStatus.js";
-import JobType from "../models/jobs/JobType.js";
+import JobStatus from "../infrastructure/models/jobs/JobStatus.js";
+import JobType from "../infrastructure/models/jobs/JobType.js";
 import ValidationMiddleware from "../middleware/ValidationMiddleware.js";
 
 /**

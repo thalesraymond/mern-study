@@ -16,15 +16,14 @@ import { UserSchema } from "../users/UserModel.js";
  * @property updatedAt - Date when the job entry was last updated.
  */
 export interface JobSchema {
-    id: string;
     company: string;
     position: string;
     status: JobStatus;
     jobType: JobType;
     location: string;
+    createdBy: PopulatedDoc<UserSchema>;
     createdAt: Date;
     updatedAt: Date;
-    createdBy: PopulatedDoc<UserSchema>
 }
 
 const jobSchema = new mangoose.Schema<JobSchema>(
@@ -56,7 +55,7 @@ const jobSchema = new mangoose.Schema<JobSchema>(
             type: Types.ObjectId,
             ref: "User",
             required: true,
-        },            
+        },
     },
     { timestamps: true }
 );
