@@ -5,7 +5,6 @@ import { StatusCodes } from "http-status-codes";
 import mongoose from "mongoose";
 
 // routes
-
 import jobRoutes from "./routes/JobRoutes.js";
 import registerRoutes from "./routes/RegisterRoutes.js";
 import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
@@ -13,8 +12,10 @@ import authRoutes from "./routes/AuthRoutes.js";
 import AuthMiddleware from "./middleware/AuthMiddleware.js";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/UserRoutes.js";
-
 // end routes
+
+import UserRepository from "./infrastructure/repositories/UserRepository.js";
+import JobRepository from "./infrastructure/repositories/JobRepository.js";
 
 const app = express();
 
@@ -28,6 +29,10 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+// Instantiate repositories
+const userRepository = new UserRepository();
+const jobRepository = new JobRepository();
+
 app.use("/api/v1/test", (req, res) => {
     return res.status(StatusCodes.OK).json({ msg: "test" });
 });
@@ -36,9 +41,17 @@ app.use("/api/v1/auth", authRoutes);
 
 app.use("/api/v1/register", registerRoutes);
 
-app.use("/api/v1/jobs", AuthMiddleware.authenticateUser, jobRoutes);
+app.use(
+    "/api/v1/jobs",
+    AuthMiddleware.authenticateUser,
+    jobRoutes(jobRepository, userRepository)
+);
 
-app.use("/api/v1/user", AuthMiddleware.authenticateUser, userRoutes);
+app.use(
+    "/api/v1/user",
+    AuthMiddleware.authenticateUser,
+    userRoutes(userRepository, jobRepository)
+);
 
 app.use((_req, res) => {
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });

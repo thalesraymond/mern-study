@@ -1,97 +1,131 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import JobModel from "../models/jobs/JobModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import { JobPayload, JobParams } from "../requests/JobRequest.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
+import { IJobRepository } from "../domain/repositories/IJobRepository.js";
+import { IUserRepository } from "../domain/repositories/IUserRepository.js";
+import { EntityId } from "../domain/entities/EntityId.js";
+import Job from "../domain/entities/Job.js";
 
-/**
- * Controller class for handling job-related operations.
- *
- * Provides methods for CRUD operations on jobs, including:
- * - Retrieving all jobs
- * - Creating a new job
- * - Retrieving a job by its ID
- * - Updating an existing job
- * - Deleting a job
- *
- * Each method is designed to be used as an Express route handler and returns appropriate HTTP status codes and JSON responses.
- *
- * @class JobController
- */
 export default class JobController {
-    public async getAllJobs(
+    constructor(
+        private readonly jobRepository: IJobRepository,
+        private readonly userRepository: IUserRepository
+    ) {}
+
+    public getAllJobs = async (
         req: Request<{}, {}, {}>,
         res: Response<{ jobs: JobPayload[] }>
-    ) {
-        const jobs = await JobModel.find();
+    ) => {
+        const jobs = await this.jobRepository.listAll();
+        const jobPayloads = jobs.map((job) => ({
+            id: job.id!.toString(),
+            company: job.company,
+            position: job.position,
+            status: job.status,
+            jobType: job.jobType,
+            location: job.location,
+            createdBy: job.createdBy.id!.toString(),
+        }));
+        return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
+    };
 
-        return res.status(StatusCodes.OK).json({ jobs });
-    }
-
-    public async createJob(
+    public createJob = async (
         req: Request<{}, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
-    ) {
+    ) => {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
 
-        const jobToCreate = { ...req.body, createdBy: req.user?.userId };
+        const createdBy = await this.userRepository.getById(
+            new EntityId(req.user.userId)
+        );
+        if (!createdBy) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
 
-        const job = await JobModel.create(jobToCreate);
+        const jobToCreate = new Job({ ...req.body, createdBy });
+        const job = await this.jobRepository.create(jobToCreate);
 
-        return res.status(StatusCodes.CREATED).json({ job });
-    }
+        return res.status(StatusCodes.CREATED).json({
+            job: {
+                id: job.id!.toString(),
+                company: job.company,
+                position: job.position,
+                status: job.status,
+                jobType: job.jobType,
+                location: job.location,
+                createdBy: job.createdBy.id!.toString(),
+            },
+        });
+    };
 
-    public async getJobById(
+    public getJobById = async (
         req: Request<JobParams>,
         res: Response<{ job: JobPayload }>
-    ) {
-        const {id} = req.params;
-
-        const job: JobPayload | null = await JobModel.findById(id);
+    ) => {
+        const { id } = req.params;
+        const job = await this.jobRepository.getById(new EntityId(id));
 
         if (!job) {
             throw new NotFoundError(`Job not found with id ${id}`);
         }
 
-        return res.status(StatusCodes.OK).json({job});
-    }
+        return res.status(StatusCodes.OK).json({
+            job: {
+                id: job.id!.toString(),
+                company: job.company,
+                position: job.position,
+                status: job.status,
+                jobType: job.jobType,
+                location: job.location,
+                createdBy: job.createdBy.id!.toString(),
+            },
+        });
+    };
 
-    public async updateJob(
+    public updateJob = async (
         req: Request<JobParams, {}, JobPayload>,
         res: Response<{ job: JobPayload }>
-    ) {
+    ) => {
         const { id } = req.params;
 
-        const jobToUpdate = { ...req.body };
-
-        const updatedJob = await JobModel.findByIdAndUpdate(
-            id,
-            jobToUpdate,
-            {
-                new: true,
-            }
-        );
-
-        if (!updatedJob) {
+        const existingJob = await this.jobRepository.getById(new EntityId(id));
+        if (!existingJob) {
             throw new NotFoundError(`Job not found with id ${id}`);
         }
 
-        return res.status(StatusCodes.OK).json({ job: updatedJob });
-    }
+        const jobToUpdate = new Job({
+            ...existingJob,
+            ...req.body,
+            id: existingJob.id,
+        });
 
-    public async deleteJob(
+        const updatedJob = await this.jobRepository.update(jobToUpdate);
+
+        return res.status(StatusCodes.OK).json({
+            job: {
+                id: updatedJob.id!.toString(),
+                company: updatedJob.company,
+                position: updatedJob.position,
+                status: updatedJob.status,
+                jobType: updatedJob.jobType,
+                location: updatedJob.location,
+                createdBy: updatedJob.createdBy.id!.toString(),
+            },
+        });
+    };
+
+    public deleteJob = async (
         req: Request<JobParams>,
         res: Response<{ msg: string }>
-    ) {
+    ) => {
         const { id } = req.params;
-
-        await JobModel.findByIdAndDelete(id);
-
+        await this.jobRepository.delete(new EntityId(id));
         return res
             .status(StatusCodes.OK)
             .json({ msg: "Job deleted successfully" });
-    }
+    };
 }
