@@ -26,7 +26,6 @@ export default class JobController {
             status: job.status,
             jobType: job.jobType,
             location: job.location,
-            createdBy: job.createdBy.id!.toString(),
         }));
         return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };
@@ -64,7 +63,6 @@ export default class JobController {
                 status: job.status,
                 jobType: job.jobType,
                 location: job.location,
-                createdBy: job.createdBy.id!.toString(),
             },
         });
     };
@@ -88,7 +86,6 @@ export default class JobController {
                 status: job.status,
                 jobType: job.jobType,
                 location: job.location,
-                createdBy: job.createdBy.id!.toString(),
             },
         });
     };
@@ -124,7 +121,6 @@ export default class JobController {
                 status: updatedJob.status,
                 jobType: updatedJob.jobType,
                 location: updatedJob.location,
-                createdBy: updatedJob.createdBy.id!.toString(),
             },
         });
     };

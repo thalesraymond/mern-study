@@ -2,11 +2,13 @@ import Adapter from "./Adapter.js";
 import User from "../domain/entities/User.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import Email from "../domain/entities/Email.js";
+import { UserSchema } from "../models/users/UserModel.js";
 
 export default class UserAdapter extends Adapter<User> {
-    public toDomain(raw: any): User {
+    public toDomain(raw: UserSchema): User {
+        const rawAsAny = raw as any;
         return new User({
-            id: new EntityId(raw.id || raw._id.toString()),
+            id: new EntityId(rawAsAny.id || rawAsAny._id.toString()),
             name: raw.name,
             lastName: raw.lastName,
             email: Email.create(raw.email),

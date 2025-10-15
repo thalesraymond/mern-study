@@ -5,9 +5,10 @@ import UserAdapter from "./UserAdapter.js";
 import UserModel from "../models/users/UserModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import User from "../domain/entities/User.js";
+import { JobSchema } from "../models/jobs/JobModel.js";
 
 export default class JobAdapter extends Adapter<Job> {
-    public async toDomain(raw: any): Promise<Job> {
+    public async toDomain(raw: JobSchema): Promise<Job> {
         let createdByUser: User;
 
         // Check if createdBy is populated
@@ -27,8 +28,9 @@ export default class JobAdapter extends Adapter<Job> {
             createdByUser = userAdapter.toDomain(userDoc.toObject());
         }
 
+        const rawAsAny = raw as any;
         return new Job({
-            id: new EntityId(raw.id || raw._id.toString()),
+            id: new EntityId(rawAsAny.id || rawAsAny._id.toString()),
             company: raw.company,
             position: raw.position,
             status: raw.status,
