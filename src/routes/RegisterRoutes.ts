@@ -1,13 +1,19 @@
 import express from "express";
 import UserController from "../controllers/UserController.js";
 import UserValidator from "../validators/UserValidator.js";
+import { IUserRepository } from "../domain/repositories/IUserRepository.js";
+import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 
-const registerRoutes = express.Router();
+export default (
+    userRepository: IUserRepository,
+    jobRepository: IJobRepository
+) => {
+    const registerRoutes = express.Router();
+    const userController = new UserController(userRepository, jobRepository);
 
-const userController = new UserController();
+    registerRoutes
+        .route("/")
+        .post(UserValidator.registerUserValidation(), userController.register);
 
-registerRoutes
-    .route("/")
-    .post(UserValidator.registerUserValidation(), userController.register);
-
-export default registerRoutes;
+    return registerRoutes;
+};
