@@ -1,11 +1,14 @@
-import { Outlet, useLoaderData } from "react-router-dom";
+import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../components";
 import { useState } from "react";
 import DashboardContext from "./DashboardContext";
 import { getSavedDarkTheme } from "../DarkThemeSwitcher";
+import apiClient from "../utils/ApiClient";
+import { toast } from "react-toastify";
 
 const DashboardLayout = () => {
+    const navigate = useNavigate();
     const loaderData: {
         user: {
             name: string;
@@ -36,7 +39,11 @@ const DashboardLayout = () => {
     };
 
     const logoutUser = async () => {
-        console.log("logout user");
+        navigate("/");
+
+        apiClient.get("/auth/logout");
+
+        toast.success("User logged out successfully");
     };
 
     return (
@@ -57,7 +64,7 @@ const DashboardLayout = () => {
                     <div>
                         <Navbar></Navbar>
                         <div className="dashboard-page">
-                            <Outlet />
+                            <Outlet context={{ user }} />
                         </div>
                     </div>
                 </main>
