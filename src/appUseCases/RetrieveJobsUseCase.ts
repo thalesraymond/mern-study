@@ -17,7 +17,7 @@ export default class RetrieveJobsUseCase {
         private readonly userRepository: IUserRepository
     ) {}
 
-    public async execute({ jobId, userId }: RetrieveJobsUseCasePayload): Promise<Job | Job[] | null> {
+    public async execute({ jobId, userId }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
         const userEntityId = new EntityId(userId);
         const user = await this.userRepository.getById(userEntityId);
 
