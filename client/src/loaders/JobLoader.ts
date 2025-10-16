@@ -1,7 +1,7 @@
 import type { ActionFunctionArgs } from "react-router-dom";
 import apiClient from "../utils/ApiClient";
 
-export const jobLoader = async ({ params }: ActionFunctionArgs) => {
+const jobLoader = async ({ params }: ActionFunctionArgs) => {
     if (!params.jobId) return null;
 
     const {
@@ -24,3 +24,5 @@ export const jobLoader = async ({ params }: ActionFunctionArgs) => {
 
     return data.job;
 };
+
+export default jobLoader;

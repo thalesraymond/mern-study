@@ -2,9 +2,9 @@ import { toast } from "react-toastify";
 import apiClient from "../utils/ApiClient";
 import type { AxiosError } from "axios";
 
-const dashboardLoader = async () => {
+const allJobsLoader = async () => {
     try {
-        const { data } = await apiClient.get("/user");
+        const { data } = await apiClient.get("/jobs");
 
         return data;
     } catch (error) {
@@ -16,4 +16,4 @@ const dashboardLoader = async () => {
     }
 };
 
-export default dashboardLoader;
+export default allJobsLoader;
