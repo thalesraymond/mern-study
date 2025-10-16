@@ -19,6 +19,7 @@
         "build": "tsc",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
+        "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
         "start": "npm run build && node ./dist/server.js",
         "client": "cd client && npm run dev",
         "dev": "concurrently --kill others-on-fail \"npx tsx --env-file=.env --watch ./src/server.ts\" \"npm run client\""
