@@ -19,6 +19,7 @@ import dashboardLoader from "./pages/dashboard/DashboardLoader";
 import jobLoader from "./pages/editJobs/JobLoader";
 import allJobsLoader from "./pages/listJobs/AllJobsLoader";
 import deleteJobAction from "./pages/deleteJob/deleteJobAction";
+import adminStatsLoader from "./pages/admin/AdminStatsLoader";
 
 const router = createBrowserRouter([
     {
@@ -72,6 +73,7 @@ const router = createBrowserRouter([
                     {
                         path: "admin",
                         element: <Admin />,
+                        loader: adminStatsLoader,
                     },
                     {
                         path: "delete-job/:jobId",

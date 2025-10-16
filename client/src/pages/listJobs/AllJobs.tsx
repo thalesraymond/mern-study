@@ -1,6 +1,6 @@
 import { useLoaderData } from "react-router-dom";
-import { JobsContainer, SearchContainer } from "../components";
-import AllJobsContext from "./listJobs/AllJobsContext";
+import { JobsContainer, SearchContainer } from "../../components";
+import AllJobsContext from "./AllJobsContext";
 
 const AllJobs = () => {
     const { jobs } = useLoaderData();
