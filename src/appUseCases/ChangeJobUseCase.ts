@@ -1,6 +1,6 @@
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
-import { ValidateOwnershipUseCase } from "./ValidateOwnershipUseCase.js";
+import ValidateOwnershipUseCase from "./ValidateOwnershipUseCase.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";

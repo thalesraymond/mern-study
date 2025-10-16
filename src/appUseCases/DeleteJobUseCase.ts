@@ -2,7 +2,7 @@ import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import NotFoundError from "../errors/NotFoundError.js";
-import { ValidateOwnershipUseCase } from "./ValidateOwnershipUseCase.js";
+import ValidateOwnershipUseCase from "./ValidateOwnershipUseCase.js";
 
 export interface DeleteJobRequest {
     jobId: string;
