@@ -140,3 +140,8 @@ vite.config.ts.timestamp-*
 
 build/
 dist/
+
+# vitest
+vitest.config.js.map
+vitest.config.js
+coverage/
