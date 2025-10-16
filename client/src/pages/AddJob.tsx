@@ -2,9 +2,7 @@ import { FormRow, FormRowSelect, SubmitButton } from "../components";
 import Wrapper from "../assets/wrappers/DashboardFormPage";
 import { useLoaderData, useOutletContext } from "react-router-dom";
 import { JOB_STATUS, JOB_TYPE } from "../utils/Constants";
-import { Form, useNavigation, redirect } from "react-router-dom";
-import { toast } from "react-toastify";
-import apiClient from "../utils/ApiClient";
+import { Form } from "react-router-dom";
 
 const AddJob = () => {
     const { user } = useOutletContext() as { user: { location: string } };
@@ -26,8 +24,13 @@ const AddJob = () => {
                 <h4 className="form-title"> {isEditing ? "edit job" : "add job"}</h4>
                 <div className="form-center">
                     <FormRow type="text" name="position" defaultValue={job?.position ?? ""} />
-                    <FormRow type="text" name="company" defaultValue={job?.company ?? ""}/>
-                    <FormRow type="text" labelText="job location" name="location" defaultValue={job?.location ?? user?.location ?? ""} />
+                    <FormRow type="text" name="company" defaultValue={job?.company ?? ""} />
+                    <FormRow
+                        type="text"
+                        labelText="job location"
+                        name="location"
+                        defaultValue={job?.location ?? user?.location ?? ""}
+                    />
                     <FormRowSelect
                         labelText="job status"
                         name="status"
