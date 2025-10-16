@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import NotFoundError from "../errors/NotFoundError.js";
 import { JobPayload, JobParams } from "../requests/JobRequest.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
@@ -67,11 +66,8 @@ export default class JobController {
         }
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
-        const job = await useCase.execute({ userId: req.user.userId, jobId: id }) as Job;
 
-        if (!job) {
-            throw new NotFoundError(`Job not found with id ${id}`);
-        }
+        const job = await useCase.execute({ userId: req.user.userId, jobId: id }) as Job;
 
         return res.status(StatusCodes.OK).json({
             job: this.toJobPayload(job),
