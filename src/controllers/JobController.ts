@@ -5,10 +5,10 @@ import { JobPayload, JobParams } from "../requests/JobRequest.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
-import { EntityId } from "../domain/entities/EntityId.js";
 import Job, { JobStatus, JobType } from "../domain/entities/Job.js";
 import DeleteJobUseCase from "../appUseCases/DeleteJobUseCase.js";
 import ChangeJobUseCase from "../appUseCases/ChangeJobUseCase.js";
+import RetrieveJobsUseCase from "../appUseCases/RetrieveJobsUseCase.js";
 
 export default class JobController {
     constructor(
@@ -31,8 +31,13 @@ export default class JobController {
     }
 
     public getAllJobs = async (req: Request<{}, {}, {}>, res: Response<{ jobs: JobPayload[] }>) => {
-        const jobs = await this.jobRepository.listAll();
-        const jobPayloads = jobs.map((job) => this.toJobPayload(job));
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
+
+        const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
+        const jobs = await useCase.execute({ userId: req.user.userId }) as Job[];
+        const jobPayloads = jobs ? jobs.map((job) => this.toJobPayload(job)) : [];
         return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };
 
@@ -57,7 +62,12 @@ export default class JobController {
 
     public getJobById = async (req: Request<JobParams>, res: Response<{ job: JobPayload }>) => {
         const { id } = req.params;
-        const job = await this.jobRepository.getById(new EntityId(id));
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
+
+        const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
+        const job = await useCase.execute({ userId: req.user.userId, jobId: id }) as Job;
 
         if (!job) {
             throw new NotFoundError(`Job not found with id ${id}`);
