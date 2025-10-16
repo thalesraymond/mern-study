@@ -1,9 +1,9 @@
 import { redirect, type ActionFunctionArgs } from "react-router-dom";
-import apiClient from "../utils/ApiClient";
+import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
-export const addJobAction = async ({ request, params }: ActionFunctionArgs) => {
+const addJobAction = async ({ request, params }: ActionFunctionArgs) => {
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
     const jobId = params.jobId;
@@ -28,3 +28,5 @@ export const addJobAction = async ({ request, params }: ActionFunctionArgs) => {
         return null;
     }
 };
+
+export default addJobAction;

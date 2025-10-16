@@ -1,10 +1,10 @@
 import { toast } from "react-toastify";
-import apiClient from "../utils/ApiClient";
+import apiClient from "../../utils/ApiClient";
 import type { AxiosError } from "axios";
 
-const allJobsLoader = async () => {
+const dashboardLoader = async () => {
     try {
-        const { data } = await apiClient.get("/jobs");
+        const { data } = await apiClient.get("/user");
 
         return data;
     } catch (error) {
@@ -16,4 +16,4 @@ const allJobsLoader = async () => {
     }
 };
 
-export default allJobsLoader;
+export default dashboardLoader;
