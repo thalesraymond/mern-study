@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs } from "react-router-dom";
+import { redirect, type ActionFunctionArgs } from "react-router-dom";
 import apiClient from "../utils/ApiClient";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
@@ -19,7 +19,7 @@ export const addJobAction = async ({ request, params }: ActionFunctionArgs) => {
             toast.success("Job added successfully");
         }
 
-        return null;
+        return redirect("all-jobs");
     } catch (error) {
         const axiosError = error as AxiosError<{ msg: string }>;
 
