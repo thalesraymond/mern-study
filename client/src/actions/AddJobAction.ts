@@ -19,12 +19,12 @@ export const addJobAction = async ({ request, params }: ActionFunctionArgs) => {
             toast.success("Job added successfully");
         }
 
-        return redirect("all-jobs");
+        return redirect("/dashboard/all-jobs");
     } catch (error) {
         const axiosError = error as AxiosError<{ msg: string }>;
 
         toast.error(axiosError?.response?.data?.msg);
 
-        return error;
+        return null;
     }
 };

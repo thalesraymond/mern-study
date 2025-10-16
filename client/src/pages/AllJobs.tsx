@@ -1,9 +1,15 @@
+import { useLoaderData } from "react-router-dom";
+import { JobsContainer, SearchContainer } from "../components";
+import AllJobsContext from "./AllJobsContext";
+
 const AllJobs = () => {
+    const { jobs } = useLoaderData();
     return (
-        <div>
-            <h1>All Jobs</h1>
-        </div>
+        <AllJobsContext.Provider value={{ jobs }}>
+            <SearchContainer />
+            <JobsContainer />
+        </AllJobsContext.Provider>
     );
-}
+};
 
 export default AllJobs;
