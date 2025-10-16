@@ -1,13 +1,15 @@
 import { NextFunction, Response, Request } from "express";
-import TokenUtils from "../utils/TokenUtils.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
+import TokenManager from "../infrastructure/security/TokenManager.js";
 
 export default class AuthMiddleware {
-    public static authenticateUser(
+    constructor(private tokenManager: TokenManager) {}
+
+    public authenticateUser = (
         req: Request,
         res: Response,
         next: NextFunction
-    ) {
+    ) => {
         const token: string = req.cookies.token;
 
         if (!token) {
@@ -15,7 +17,7 @@ export default class AuthMiddleware {
         }
 
         try {
-            const userData = TokenUtils.verifyToken(token);
+            const userData = this.tokenManager.verifyToken(token);
 
             req.user = userData;
 
@@ -25,7 +27,7 @@ export default class AuthMiddleware {
         }
     }
 
-    public static authorizePermissions(...roles: string[]) {
+    public authorizePermissions(...roles: string[]) {
         return (req: Request, res: Response, next: NextFunction) => {
             if (!roles.includes(req.user?.role ?? "")) {
                 throw new UnauthenticatedError(

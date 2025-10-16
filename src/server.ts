@@ -9,7 +9,6 @@ import jobRoutes from "./routes/JobRoutes.js";
 import registerRoutes from "./routes/RegisterRoutes.js";
 import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
 import authRoutes from "./routes/AuthRoutes.js";
-import AuthMiddleware from "./middleware/AuthMiddleware.js";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/UserRoutes.js";
 // end routes
@@ -43,13 +42,11 @@ app.use("/api/v1/register", registerRoutes(userRepository, jobRepository));
 
 app.use(
     "/api/v1/jobs",
-    AuthMiddleware.authenticateUser,
     jobRoutes(jobRepository, userRepository)
 );
 
 app.use(
     "/api/v1/user",
-    AuthMiddleware.authenticateUser,
     userRoutes(userRepository, jobRepository)
 );
 
