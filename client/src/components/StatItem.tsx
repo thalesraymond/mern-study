@@ -16,7 +16,7 @@ const StatItem = ({
 }) => {
     return (
         //<Wrapper color={color} back={bcg}>
-        <Wrapper color={color}>
+        <Wrapper color={color} bcg={bcg}>
             <header>
                 <span className="count">{count}</span>
                 <span className="icon">{icon}</span>
