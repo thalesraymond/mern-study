@@ -18,6 +18,7 @@ import registerAction from "./pages/register/RegisterAction";
 import dashboardLoader from "./pages/dashboard/DashboardLoader";
 import jobLoader from "./pages/editJobs/JobLoader";
 import allJobsLoader from "./pages/listJobs/AllJobsLoader";
+import deleteJobAction from "./pages/deleteJob/deleteJobAction";
 
 const router = createBrowserRouter([
     {
@@ -71,6 +72,10 @@ const router = createBrowserRouter([
                     {
                         path: "admin",
                         element: <Admin />,
+                    },
+                    {
+                        path: "delete-job/:jobId",
+                        action: deleteJobAction,
                     },
                 ],
             },

@@ -8,6 +8,6 @@ export { default as Profile } from "./Profile";
 export { default as Register } from "./register/Register";
 export { default as Stats } from "./Stats";
 export { default as Admin } from "./Admin";
-export { default as DeleteJob } from "./DeleteJob";
+export { default as DeleteJob } from "./deleteJob/DeleteJob";
 export { default as DashboardLayout } from "./dashboard/DashboardLayout";
 export { default as HomeLayout } from "./HomeLayout";
