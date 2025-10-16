@@ -14,7 +14,7 @@ export default class UserAdapter extends Adapter<User, UserSchema> {
             name: raw.name,
             lastName: raw.lastName,
             email: Email.create(raw.email),
-            password: UserPassword.create(raw.password),
+            password: UserPassword.createFromHashed(raw.password),
             location: raw.location,
             role: raw.role as UserRole,
             createdAt: raw.createdAt,

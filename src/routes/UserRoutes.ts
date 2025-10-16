@@ -4,6 +4,7 @@ import UserValidator from "../validators/UserValidator.js";
 import AuthMiddleware from "../middleware/AuthMiddleware.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
+import TokenManager from "../infrastructure/security/TokenManager.js";
 
 export default (
     userRepository: IUserRepository,
@@ -11,16 +12,22 @@ export default (
 ) => {
     const userRoutes = express.Router();
     const userController = new UserController(userRepository, jobRepository);
+    const authMiddleware = new AuthMiddleware(new TokenManager());
 
     userRoutes
         .route("/")
-        .get(userController.getCurrentUser)
-        .patch(UserValidator.updateUserValidation(), userController.updateUser);
+        .get(authMiddleware.authenticateUser, userController.getCurrentUser)
+        .patch(
+            authMiddleware.authenticateUser,
+            UserValidator.updateUserValidation(),
+            userController.updateUser
+        );
 
     userRoutes
         .route("/stats")
         .get(
-            AuthMiddleware.authorizePermissions("admin"),
+            authMiddleware.authenticateUser,
+            authMiddleware.authorizePermissions("admin"),
             userController.getAppStats
         );
 
