@@ -8,8 +8,6 @@ const registerAction = async ({ request }: ActionFunctionArgs) => {
 
     const formFields = Object.fromEntries(formData);
 
-    console.log(formFields);
-
     try {
         await apiClient.post("/register", formFields);
 

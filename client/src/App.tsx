@@ -14,6 +14,8 @@ import {
 } from "./pages";
 import { registerAction, loginAction } from "./actions";
 import { dashboardLoader } from "./loaders";
+import { addJobAction } from "./actions/AddJobAction";
+import { jobLoader } from "./loaders/JobLoader";
 
 const router = createBrowserRouter([
     {
@@ -43,6 +45,13 @@ const router = createBrowserRouter([
                     {
                         index: true,
                         element: <AddJob />,
+                        action: addJobAction,
+                    },
+                    {
+                        path: "edit-job/:jobId",
+                        element: <AddJob />,
+                        action: addJobAction,
+                        loader: jobLoader,
                     },
                     {
                         path: "stats",
