@@ -8,6 +8,7 @@ import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import Job, { JobStatus, JobType } from "../domain/entities/Job.js";
 import DeleteJobUseCase from "../appUseCases/DeleteJobUseCase.js";
+import ChangeJobUseCase from "../appUseCases/ChangeJobUseCase.js";
 
 export default class JobController {
     constructor(
@@ -40,22 +41,14 @@ export default class JobController {
             throw new UnauthenticatedError("Authentication Invalid");
         }
 
-        const createdBy = await this.userRepository.getById(new EntityId(req.user.userId));
-        if (!createdBy) {
-            throw new UnauthenticatedError("Authentication Invalid");
-        }
-
-        const jobToCreate = new Job({
-            company: req.body.company,
-            position: req.body.position,
-            location: req.body.location,
+        const useCase = new ChangeJobUseCase(this.jobRepository, this.userRepository);
+        const job = await useCase.execute({
+            ...req.body,
             status: req.body.status as JobStatus,
             jobType: req.body.jobType as JobType,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            createdBy,
+
+            userId: req.user.userId,
         });
-        const job = await this.jobRepository.create(jobToCreate);
 
         return res.status(StatusCodes.CREATED).json({
             job: this.toJobPayload(job),
@@ -77,28 +70,24 @@ export default class JobController {
 
     public updateJob = async (req: Request<JobParams, {}, Partial<JobPayload>>, res: Response<{ job: JobPayload }>) => {
         const { id } = req.params;
-
-        const existingJob = await this.jobRepository.getById(new EntityId(id));
-        if (!existingJob) {
-            throw new NotFoundError(`Job not found with id ${id}`);
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
         }
 
-        const jobToUpdate = new Job({
-            company: req.body.company ?? existingJob.company,
-            position: req.body.position ?? existingJob.position,
-            location: req.body.location ?? existingJob.location,
-            status: (req.body.status ?? existingJob.status) as JobStatus,
-            jobType: (req.body.jobType ?? existingJob.jobType) as JobType,
-            createdBy: existingJob.createdBy,
-            createdAt: existingJob.createdAt,
-            updatedAt: new Date(),
-            id: existingJob.id,
+        const useCase = new ChangeJobUseCase(this.jobRepository, this.userRepository);
+        const job = await useCase.execute({
+            ...req.body,
+            jobId: id,
+            userId: req.user.userId,
+            company: req.body.company ?? "",
+            position: req.body.position ?? "",
+            status: (req.body.status ?? "") as JobStatus,
+            jobType: (req.body.jobType ?? "") as JobType,
+            location: req.body.location ?? "",
         });
 
-        const updatedJob = await this.jobRepository.update(jobToUpdate);
-
         return res.status(StatusCodes.OK).json({
-            job: this.toJobPayload(updatedJob),
+            job: this.toJobPayload(job),
         });
     };
 
