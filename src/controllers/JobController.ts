@@ -7,6 +7,7 @@ import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import Job, { JobStatus, JobType } from "../domain/entities/Job.js";
+import DeleteJobUseCase from "../appUseCases/DeleteJobUseCase.js";
 
 export default class JobController {
     constructor(
@@ -102,8 +103,16 @@ export default class JobController {
     };
 
     public deleteJob = async (req: Request<JobParams>, res: Response<{ msg: string }>) => {
-        const { id } = req.params;
-        await this.jobRepository.delete(new EntityId(id));
+        const useCase = new DeleteJobUseCase(
+            this.jobRepository,
+            this.userRepository
+        );
+
+        await useCase.execute({
+            jobId: req.params.id,
+            userId: req.user?.userId ?? "",
+        });
+
         return res.status(StatusCodes.OK).json({ msg: "Job deleted successfully" });
     };
 }
