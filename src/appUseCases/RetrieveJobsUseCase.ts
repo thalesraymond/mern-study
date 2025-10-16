@@ -12,10 +12,13 @@ interface RetrieveJobsUseCasePayload {
 }
 
 export default class RetrieveJobsUseCase {
+    private readonly ownershipUseCase: ValidateOwnershipUseCase;
     constructor(
         private readonly jobRepository: IJobRepository,
         private readonly userRepository: IUserRepository
-    ) {}
+    ) {
+        this.ownershipUseCase = new ValidateOwnershipUseCase(this.userRepository);
+    }
 
     public async execute({ jobId, userId }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
         const userEntityId = new EntityId(userId);
@@ -33,8 +36,7 @@ export default class RetrieveJobsUseCase {
                 throw new NotFoundError(`Job with id ${jobId} not found`);
             }
 
-            const ownershipUseCase = new ValidateOwnershipUseCase(this.userRepository);
-            await ownershipUseCase.execute(user.id, job.createdBy.id as EntityId);
+            await this.ownershipUseCase.execute(user.id, job.createdBy.id as EntityId);
 
             return job;
         }
