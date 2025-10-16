@@ -12,9 +12,12 @@ import {
     Profile,
     Admin,
 } from "./pages";
-import { registerAction, loginAction } from "./actions";
-import { allJobsLoader, dashboardLoader, jobLoader } from "./loaders";
-import { addJobAction } from "./actions/AddJobAction";
+import addJobAction from "./pages/editJobs/AddJobAction";
+import loginAction from "./pages/login/LoginAction";
+import registerAction from "./pages/register/RegisterAction";
+import dashboardLoader from "./pages/dashboard/DashboardLoader";
+import jobLoader from "./pages/editJobs/JobLoader";
+import allJobsLoader from "./pages/listJobs/AllJobsLoader";
 
 const router = createBrowserRouter([
     {

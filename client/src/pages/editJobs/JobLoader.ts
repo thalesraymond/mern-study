@@ -1,5 +1,5 @@
 import type { ActionFunctionArgs } from "react-router-dom";
-import apiClient from "../utils/ApiClient";
+import apiClient from "../../utils/ApiClient";
 
 const jobLoader = async ({ params }: ActionFunctionArgs) => {
     if (!params.jobId) return null;

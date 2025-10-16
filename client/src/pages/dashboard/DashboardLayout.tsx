@@ -1,10 +1,10 @@
 import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
-import Wrapper from "../assets/wrappers/Dashboard";
-import { BigSidebar, Navbar, SmallSidebar } from "../components";
+import Wrapper from "../../assets/wrappers/Dashboard";
+import { BigSidebar, Navbar, SmallSidebar } from "../../components";
 import { useState } from "react";
 import DashboardContext from "./DashboardContext";
-import { getSavedDarkTheme } from "../DarkThemeSwitcher";
-import apiClient from "../utils/ApiClient";
+import { getSavedDarkTheme } from "../../DarkThemeSwitcher";
+import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
 
 const DashboardLayout = () => {
@@ -23,7 +23,6 @@ const DashboardLayout = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(getSavedDarkTheme());
 
     const toggleDarkTheme = () => {
-
         const newDarkTheme = !isDarkTheme;
 
         setIsDarkTheme(newDarkTheme);

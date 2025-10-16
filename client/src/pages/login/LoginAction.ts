@@ -1,5 +1,5 @@
 import { redirect, type ActionFunctionArgs } from "react-router-dom";
-import apiClient from "../utils/ApiClient";
+import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
