@@ -2,15 +2,15 @@ import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 import { UpdateUserPayload, UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
-import PasswordUtils from "../utils/PasswordUtils.js";
-import TokenUtils from "../utils/TokenUtils.js";
 import { AuthResponse } from "../requests/AuthRequest.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
-import Email from "../domain/entities/Email.js";
 import User from "../domain/entities/User.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import RegisterUserUseCase from "../appUseCases/RegisterUserUseCase.js";
+import PasswordManager from "../infrastructure/security/PasswordManager.js";
+import LoginUserUseCase from "../appUseCases/LoginUserUseCase.js";
+import TokenManager from "../infrastructure/security/TokenManager.js";
 
 export default class UserController {
     constructor(
@@ -22,7 +22,10 @@ export default class UserController {
         req: Request<{}, {}, UserPayload>,
         res: Response<{ user: Omit<UserPayload, "password"> }>
     ) => {
-        const useCase = new RegisterUserUseCase(this.userRepository);
+        const useCase = new RegisterUserUseCase(
+            this.userRepository,
+            new PasswordManager()
+        );
 
         const createdUser = await useCase.execute({
             name: req.body.name,
@@ -38,24 +41,13 @@ export default class UserController {
     };
 
     public auth = async (req: Request<{}, {}, { email: string; password: string }>, res: Response<AuthResponse>) => {
-        const { email, password } = req.body;
+        const useCase = new LoginUserUseCase(
+            this.userRepository,
+            new PasswordManager(),
+            new TokenManager()
+        );
 
-        const user = await this.userRepository.findByEmail(Email.create(email));
-
-        if (!user) {
-            throw new UnauthorizedError("Invalid credentials");
-        }
-
-        const validPassword = await PasswordUtils.comparePassword(password, user.password.hashedPassword);
-
-        if (!validPassword) {
-            throw new UnauthorizedError("Invalid credentials");
-        }
-
-        const token = TokenUtils.generateToken({
-            userId: user.id.toString(),
-            role: user.role.toString(),
-        });
+        const { token, user } = await useCase.execute(req.body);
 
         const jwtExpiration = process.env.JWT_EXPIRES_IN;
 
@@ -67,6 +59,7 @@ export default class UserController {
 
         return res.status(StatusCodes.OK).json({
             msg: "User logged in successfully",
+            user,
         });
     };
 

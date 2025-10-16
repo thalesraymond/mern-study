@@ -21,18 +21,15 @@ export default class UserPassword {
         }
     }
 
-    public static create(hashedPassword: string): UserPassword;
-    public static create(rawPassword: string, hashFunction: (password: string) => string): UserPassword;
-    public static create(hashedOrRawPassword: string, hashFunction?: (password: string) => string): UserPassword {
-        if (hashFunction != undefined) {
-            const raw = hashedOrRawPassword;
-            const hashed = hashFunction(raw);
-            return new UserPassword({
-                rawPassword: raw,
-                hashedPassword: hashed,
-            });
-        }
+    public static createFromHashed(hashedPassword: string): UserPassword {
+        return new UserPassword({ hashedPassword });
+    }
 
-        return new UserPassword({ hashedPassword: hashedOrRawPassword });
+    public static async create(rawPassword: string, hashFunction: (password: string) => Promise<string> | string): Promise<UserPassword> {
+        const hashed = await hashFunction(rawPassword);
+        return new UserPassword({
+            rawPassword: rawPassword,
+            hashedPassword: hashed,
+        });
     }
 }
