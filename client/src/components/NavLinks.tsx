@@ -8,26 +8,21 @@ const NavLinks = (options: { isBigSidebar?: boolean }) => {
 
     return (
         <div className="nav-links">
-            {links.map(
-                (link: { text: string; path: string; icon: JSX.Element }) => {
-                    return (
-                        <NavLink
-                            to={link.path}
-                            key={link.text}
-                            className={"nav-link"}
-                            onClick={() =>
-                                !options.isBigSidebar
-                                    ? data.toggleSidebar()
-                                    : null
-                            }
-                            end
-                        >
-                            <span className="icon">{link.icon}</span>
-                            {link.text}
-                        </NavLink>
-                    );
-                }
-            )}
+            {links.map((link: { text: string; path: string; icon: JSX.Element }) => {
+                if (data.user.role !== "admin" && link.path === "admin") return;
+                return (
+                    <NavLink
+                        to={link.path}
+                        key={link.text}
+                        className={"nav-link"}
+                        onClick={() => (!options.isBigSidebar ? data.toggleSidebar() : null)}
+                        end
+                    >
+                        <span className="icon">{link.icon}</span>
+                        {link.text}
+                    </NavLink>
+                );
+            })}
         </div>
     );
 };
