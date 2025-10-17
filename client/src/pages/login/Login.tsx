@@ -11,7 +11,7 @@ const Login = () => {
 
                 <FormRow type="email" name="email" defaultValue="thales@thales.com" />
 
-                <FormRow type="password" name="password" defaultValue="1q2w3e$R" />
+                <FormRow type="password" name="password" defaultValue="" />
 
                 <SubmitButton text="Login" submittingText="Logging in..." />
 
