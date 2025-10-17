@@ -15,12 +15,12 @@
     "type": "module",
     "main": "./dist/server.js",
     "scripts": {
-        "setup-project": "npm i && tsc && cd client && npm i&& npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
-        "build": "tsc",
+        "setup-project": "npm i && npm run build && cd client && npm i&& npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
+        "build": "tsc  && cp package.json package-lock.json dist/",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
         "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
-        "start": "npm run build && node ./dist/server.js",
+        "start": "node ./dist/server.js",
         "client": "cd client && npm run dev",
         "dev": "concurrently --kill others-on-fail \"npx tsx --env-file=.env --watch ./src/server.ts\" \"npm run client\""
     },
@@ -42,6 +42,7 @@
         "mongoose": "^8.18.1",
         "morgan": "^1.10.1",
         "multer": "^2.0.2",
+        "typescript": "^5.1.6",
         "nanoid": "^5.1.6"
     },
     "devDependencies": {
@@ -62,7 +63,6 @@
         "eslint-plugin-prettier": "^5.0.0",
         "prettier": "^3.0.0",
         "ts-node": "^10.9.1",
-        "typescript": "^5.1.6",
         "typescript-eslint": "^8.41.0",
         "vitest": "^3.2.4"
     }

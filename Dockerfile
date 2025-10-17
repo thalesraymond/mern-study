@@ -26,7 +26,6 @@ RUN cd client/dist && npm install --omit=dev
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/client/dist ./client/dist
 
-
 EXPOSE 80
 
 CMD ["node", "./dist/server.js"]
