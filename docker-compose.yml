@@ -4,28 +4,16 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile.server
+      dockerfile: Dockerfile
     container_name: mern-server
     ports:
-      - "5100:5100"
+      - "80:80"
     environment:
       NODE_ENV: development
-      PORT: 5100
+      PORT: 80
       MONGO_CONNECTION_STRING: ${MONGO_CONNECTION_STRING}
       JWT_SECRET: de7655363ae2e6e931c5aeb3a2e497675652c2859a3b28280e60755f060b85f7a6f8244670057101bb573d9396e63a0730da8f7f18cf100870dd547252fb30ea # this is just a realy long string and this project is just a lab, no security risk here my friend
       JWT_EXPIRES_IN: 86400
-    networks:
-      - mern-network
-
-  client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-    container_name: mern-client
-    ports:
-      - "80:80"
-    depends_on:
-      - server
     networks:
       - mern-network
 
