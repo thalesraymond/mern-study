@@ -4,14 +4,8 @@ FROM node:22-alpine AS builder
 WORKDIR /app
 
 # Copy package files and install dependencies
-COPY ./ ./
-RUN npm run setup-project
-
-# Copy the rest of the source code
 COPY . .
-
-# Build the TypeScript code
-RUN npm run build
+RUN npm run setup-project
 
 # Stage 2: Production environment
 FROM node:22-alpine AS production

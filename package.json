@@ -15,8 +15,8 @@
     "type": "module",
     "main": "./dist/server.js",
     "scripts": {
-        "setup-project": "npm i && cd client && npm i",
-        "build": "tsc && cd client && npm run build",
+        "setup-project": "npm i && tsc && cd client && npm i&& npm run build",
+        "build": "tsc",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
         "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
