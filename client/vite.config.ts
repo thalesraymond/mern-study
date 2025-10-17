@@ -14,7 +14,7 @@ export default defineConfig({
 
                 // The target is your backend server's address.
                 // Any request matching "/api" will be forwarded to http://localhost:5100.
-                target: "http://localhost:5100/api",
+                target: process.env.VITE_API_URL || "http://localhost:5100/api",
 
                 // This is crucial for virtual-hosted sites. It changes the 'Origin'
                 // header of the request to match the target's origin. This makes
