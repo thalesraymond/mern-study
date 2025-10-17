@@ -21,10 +21,7 @@ export default class UserController {
         req: Request<{}, {}, UserPayload>,
         res: Response<{ user: Omit<UserPayload, "password"> }>
     ) => {
-        const useCase = new RegisterUserUseCase(
-            this.userRepository,
-            new PasswordManager()
-        );
+        const useCase = new RegisterUserUseCase(this.userRepository, new PasswordManager());
 
         const createdUser = await useCase.execute({
             name: req.body.name,
@@ -40,18 +37,14 @@ export default class UserController {
     };
 
     public auth = async (req: Request<{}, {}, { email: string; password: string }>, res: Response<{ msg: string }>) => {
-        const useCase = new LoginUserUseCase(
-            this.userRepository,
-            new PasswordManager(),
-            new TokenManager()
-        );
+        const useCase = new LoginUserUseCase(this.userRepository, new PasswordManager(), new TokenManager());
 
         const { token } = await useCase.execute(req.body);
 
         const jwtExpiration = process.env.JWT_EXPIRES_IN;
 
         res.cookie("token", token, {
-            httpOnly: true,
+            httpOnly: process.env.NODE_ENV === "development",
             expires: new Date(Date.now() + Number(jwtExpiration) * 1000),
             secure: process.env.NODE_ENV === "production",
         });
