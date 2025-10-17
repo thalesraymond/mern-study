@@ -1,4 +1,4 @@
-import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
+import { Outlet, useLoaderData, useNavigate, useNavigation } from "react-router-dom";
 import Wrapper from "../../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../../components";
 import { useState } from "react";
@@ -6,9 +6,13 @@ import DashboardContext from "./DashboardContext";
 import { getSavedDarkTheme } from "../../DarkThemeSwitcher";
 import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
+import Loading from "../../components/Loading";
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
+    const navigation = useNavigation();
+    const isPageLoading = navigation.state === "loading";
+
     const loaderData: {
         user: {
             name: string;
@@ -62,7 +66,7 @@ const DashboardLayout = () => {
                     <div>
                         <Navbar></Navbar>
                         <div className="dashboard-page">
-                            <Outlet context={{ user }} />
+                            {isPageLoading ? <Loading /> : <Outlet context={{ user }} />}
                         </div>
                     </div>
                 </main>
