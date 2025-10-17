@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - mern-network
+
   server:
     build:
       context: .
@@ -11,9 +21,11 @@ services:
     environment:
       NODE_ENV: development
       PORT: 5100
-      MONGO_CONNECTION_STRING: ${MONGO_CONNECTION_STRING}
+      MONGO_CONNECTION_STRING: mongodb://mongodb:27017/mern-study
       JWT_SECRET: de7655363ae2e6e931c5aeb3a2e497675652c2859a3b28280e60755f060b85f7a6f8244670057101bb573d9396e63a0730da8f7f18cf100870dd547252fb30ea # this is just a realy long string and this project is just a lab, no security risk here my friend
       JWT_EXPIRES_IN: 86400
+    depends_on:
+      - mongodb
     networks:
       - mern-network
 
@@ -32,3 +44,7 @@ services:
 networks:
   mern-network:
     driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
