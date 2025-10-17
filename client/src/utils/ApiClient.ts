@@ -10,7 +10,7 @@ apiClient.interceptors.response.use(
     (error) => {
         // Check if it's a 403 error
         if (error.response && error.response.status === 403) {
-            window.location.href = "/login";
+            window.location.href = "/";
 
             return;
         }
