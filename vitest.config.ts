@@ -11,6 +11,7 @@ export default defineConfig({
                 "src/middleware/**",
                 "src/routes/**",
                 "src/requests/**",
+                "src/server.ts"
             ],
             provider: "v8",
             reporter: ["text", "json", "html"],
