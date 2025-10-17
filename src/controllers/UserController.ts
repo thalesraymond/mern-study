@@ -44,7 +44,7 @@ export default class UserController {
         const jwtExpiration = process.env.JWT_EXPIRES_IN;
 
         res.cookie("token", token, {
-            httpOnly: process.env.NODE_ENV === "development",
+            httpOnly: process.env.NODE_ENV === "production",
             expires: new Date(Date.now() + Number(jwtExpiration) * 1000),
             secure: process.env.NODE_ENV === "production",
         });
