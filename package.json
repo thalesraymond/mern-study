@@ -15,7 +15,7 @@
     "type": "module",
     "main": "./dist/server.js",
     "scripts": {
-        "setup-project": "npm i && tsc && cd client && npm i&& npm run build",
+        "setup-project": "npm i && tsc && cd client && npm i&& npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
         "build": "tsc",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
