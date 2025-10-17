@@ -16,7 +16,7 @@
     "main": "./dist/server.js",
     "scripts": {
         "setup-project": "npm i && cd client && npm i",
-        "build": "tsc",
+        "build": "tsc && cd client && npm run build",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
         "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
