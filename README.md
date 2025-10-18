@@ -5,8 +5,7 @@
 <!-- PROJECT SHIELDS -->
 
 [![codecov backend](https://codecov.io/github/thalesraymond/mern-study/branch/main/graph/badge.svg?token=0LXMHIG9FW)](https://codecov.io/github/thalesraymond/mern-study)
-[![Build Client App](https://github.com/thalesraymond/mern-study/actions/workflows/client-ci.yml/badge.svg)](https://github.com/thalesraymond/mern-study/actions/workflows/client-ci.yml)
-[![Build Server App](https://github.com/thalesraymond/mern-study/actions/workflows/server-ci.yml/badge.svg)](https://github.com/thalesraymond/mern-study/actions/workflows/server-ci.yml)
+[![CI](https://github.com/thalesraymond/mern-study/actions/workflows/ci.yml/badge.svg)](https://github.com/thalesraymond/mern-study/actions/workflows/ci.yml)
 
 <!-- PROJECT LOGO -->
 <br />
