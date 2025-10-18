@@ -5,7 +5,7 @@
     "type": "module",
     "scripts": {
         "dev": "vite",
-        "build": "tsc -b && vite build && cp package.json package-lock.json dist/",
+        "build": "npm install && tsc -b && vite build && cp package.json package-lock.json dist/",
         "lint": "eslint .",
         "preview": "vite preview"
     },
