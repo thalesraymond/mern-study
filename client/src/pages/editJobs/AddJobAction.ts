@@ -4,6 +4,13 @@ import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
 const addJobAction = async ({ request, params }: ActionFunctionArgs) => {
+    const isExplore = localStorage.getItem("isExplore");
+
+    if (isExplore && JSON.parse(isExplore)) {
+        toast.info("This feature is disabled in explore mode");
+        return null;
+    }
+
     const formData = await request.formData();
     const data = Object.fromEntries(formData);
     const jobId = params.jobId;
