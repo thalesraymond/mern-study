@@ -44,13 +44,15 @@ app.use("/api/v1/test", (req, res) => {
     return res.status(StatusCodes.OK).json({ msg: "test" });
 });
 
-app.use("/api/v1/auth", authRoutes(userRepository, jobRepository));
+const storageService = new AzureStorageService();
 
-app.use("/api/v1/register", registerRoutes(userRepository, jobRepository));
+app.use("/api/v1/auth", authRoutes(userRepository, jobRepository, storageService));
+
+app.use("/api/v1/register", registerRoutes(userRepository, jobRepository, storageService));
 
 app.use("/api/v1/jobs", jobRoutes(jobRepository, userRepository));
 
-app.use("/api/v1/user", userRoutes(userRepository, jobRepository, new AzureStorageService()));
+app.use("/api/v1/user", userRoutes(userRepository, jobRepository, storageService));
 
 app.use((_req, res) => {
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });
