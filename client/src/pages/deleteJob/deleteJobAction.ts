@@ -4,6 +4,13 @@ import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
 const deleteJobAction = async ({ params }: ActionFunctionArgs) => {
+    const isExplore = localStorage.getItem("isExplore");
+
+    if (isExplore && JSON.parse(isExplore)) {
+        toast.info("This feature is disabled in explore mode");
+        return redirect("/dashboard/all-jobs");
+    }
+
     const jobId = params.jobId;
 
     try {

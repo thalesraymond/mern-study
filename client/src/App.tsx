@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { AppProvider } from "./context/AppContext";
 import {
     DashboardLayout,
     HomeLayout,
@@ -88,7 +89,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-    return <RouterProvider router={router} />;
+    return (
+        <AppProvider>
+            <RouterProvider router={router} />
+        </AppProvider>
+    );
 };
 
 export default App;

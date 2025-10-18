@@ -3,6 +3,18 @@ import apiClient from "../../utils/ApiClient";
 import type { AxiosError } from "axios";
 
 const dashboardLoader = async () => {
+    const isExplore = localStorage.getItem("isExplore");
+
+    if (isExplore && JSON.parse(isExplore)) {
+        return {
+            user: {
+                name: "Guest User",
+                role: "user",
+                imageId: "",
+            },
+        };
+    }
+
     try {
         const { data } = await apiClient.get("/user");
 

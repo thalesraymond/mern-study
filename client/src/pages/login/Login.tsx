@@ -1,8 +1,17 @@
-import { Form, Link } from "react-router-dom";
+import { Form, Link, useNavigate } from "react-router-dom";
 import Wrapper from "../../assets/wrappers/RegisterAndLoginPage";
 import { Logo, FormRow, SubmitButton } from "../../components";
+import { useAppContext } from "../../context/AppContext";
 
 const Login = () => {
+    const { setIsExplore } = useAppContext();
+    const navigate = useNavigate();
+
+    const exploreApp = () => {
+        setIsExplore(true);
+        navigate("/dashboard");
+    };
+
     return (
         <Wrapper>
             <Form className="form" method="post">
@@ -15,7 +24,7 @@ const Login = () => {
 
                 <SubmitButton text="Login" submittingText="Logging in..." />
 
-                <button type="button" className="btn btn-block">
+                <button type="button" className="btn btn-block" onClick={exploreApp}>
                     explore the app
                 </button>
                 <p>
