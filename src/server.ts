@@ -1,4 +1,4 @@
-import path from "path";
+import path, { dirname } from "path";
 import express from "express";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
@@ -17,6 +17,7 @@ import userRoutes from "./routes/UserRoutes.js";
 import UserRepository from "./infrastructure/repositories/UserRepository.js";
 import JobRepository from "./infrastructure/repositories/JobRepository.js";
 import AzureStorageService from "./infrastructure/azure/AzureStorageService.js";
+import { fileURLToPath } from "url";
 
 const app = express();
 
@@ -34,10 +35,12 @@ app.use(cookieParser());
 const userRepository = new UserRepository();
 const jobRepository = new JobRepository();
 
-app.use(express.static("./client/dist"));
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join("./client/dist", "index.html"));
+app.use(express.static(path.join(__dirname, "client/dist")));
+
+app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, "client/dist", "index.html"));
 });
 
 app.use("/api/v1/test", (req, res) => {
