@@ -98,7 +98,14 @@ export default class UserController {
 
         const imageBuffer = req.file ? req.file.buffer : undefined;
 
-        await useCase.execute(req.user.userId, imageBuffer);
+        await useCase.execute({
+            id: req.user.userId,
+            name: req.body.name,
+            lastName: req.body.lastName ?? "",
+            email: req.body.email,
+            location: req.body.location ?? "",
+            profileImageBuffer: imageBuffer,
+        });
 
         return res.status(StatusCodes.NO_CONTENT).json({});
     };
