@@ -3,6 +3,10 @@
 
 name: Build and deploy Node.js app to Azure Web App - jobify
 
+concurrency:
+    group: ${{ github.workflow }}
+    cancel-in-progress: false
+
 on:
     push:
         branches:
@@ -25,7 +29,8 @@ jobs:
 
             - name: npm install, build, and test
               run: |
-                  npm run setup-project
+                  npm install
+                  npm run build
 
             - name: Upload artifact for deployment job
               uses: actions/upload-artifact@v4
