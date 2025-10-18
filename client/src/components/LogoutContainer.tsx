@@ -11,8 +11,12 @@ const LogoutContainer = () => {
     return (
         <Wrapper>
             <button type="button" className="btn logout-btn" onClick={() => setShowLogout(!showLogout)}>
-                <FaUserCircle />
-                {data.user?.name}
+                {data.user.imageId ? (
+                    <img src={`/api/v1/user/profile-image?id=${data.user.imageId}`} className="img" />
+                ) : (
+                    <FaUserCircle />
+                )}
+                {data.user.name}
                 <FaCaretDown />
             </button>
             <div className={showLogout ? "dropdown show-dropdown" : "dropdown"}>

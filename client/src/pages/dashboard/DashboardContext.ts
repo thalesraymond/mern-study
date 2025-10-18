@@ -3,7 +3,8 @@ import { createContext, useContext } from "react";
 const DashboardContext = createContext({
     user: {
         name: "",
-        role: ""
+        role: "",
+        imageId: ""
     },
     showSidebar: false,
     isDarkTheme: false,

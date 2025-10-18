@@ -25,6 +25,11 @@ export class UpdateUserUseCase {
         throw new BadRequestError('invalid image');
     }
 
+    if (imageBuffer.byteLength > 1024 * 1024 * 2) {
+        throw new BadRequestError('Image must be smaller than 2MB');
+    }
+
+
     if(user.imageId) {
         await this.storageService.deleteFile(user.imageId);
     }
