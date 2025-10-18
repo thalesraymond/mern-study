@@ -27,12 +27,15 @@ jobs:
               run: |
                   npm run setup-project
 
+            - name: Prepare artifact
+              run: mkdir -p artifact && cp -r dist artifact/
+
             - name: Upload artifact for deployment job
               uses: actions/upload-artifact@v4
               with:
                   name: node-app
                   path: |
-                    dist
+                      ./artifact
 
     deploy:
         runs-on: ubuntu-latest
