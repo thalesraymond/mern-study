@@ -79,6 +79,15 @@ This document outlines the coding style, conventions, and architectural patterns
 
 ### 4. Testing with `vitest`
 
+-   **Import Paths**: Always import the original TypeScript source files from the `src` directory in your test files. **Do not** import compiled JavaScript files from the `dist` directory. This is critical for ensuring accurate code coverage reporting.
+
+    ```typescript
+    // Correct
+    import MyService from '../../src/services/MyService.js';
+
+    // Incorrect
+    import MyService from '../../dist/services/MyService.js';
+    ```
 -   **Structure**: Use `describe` to group tests for a class or function, and `it` to define individual test cases. Test descriptions should clearly state what the unit "should" do.
 -   **Setup and Teardown**: Use `beforeEach` to reset mocks and initialize classes for a clean test environment. Always call `vi.clearAllMocks()` within `beforeEach`.
 -   **Mocking**:
