@@ -15,7 +15,8 @@
     "type": "module",
     "main": "./dist/server.js",
     "scripts": {
-        "setup-project": "npm i && npm run build && cd client && npm i&& npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
+        "clear-dist": "rm -rf dist/ && rm -rf client/dist",
+        "setup-project": "npm run clear-dist && npm i && npm run build && cd client && npm i&& npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
         "build": "tsc  && cp package.json package-lock.json dist/",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
