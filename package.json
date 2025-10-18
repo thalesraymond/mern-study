@@ -15,15 +15,18 @@
     "type": "module",
     "main": "./dist/server.js",
     "scripts": {
-        "clear-dist": "rm -rf dist/ && rm -rf client/dist",
-        "setup-project": "npm run clear-dist && npm i && npm run build && cd client && npm i&& npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
-        "build": "tsc  && cp package.json package-lock.json dist/",
+        "dev": "concurrently --kill-others-on-fail \"npm:dev:server\" \"npm:dev:client\"",
+        "dev:server": "npx tsx --env-file=.env --watch ./src/server.ts",
+        "dev:client": "cd client && npm run dev",
+        "build": "npm run build:server && npm run build:client",
+        "build:server": "tsc && cp package.json package-lock.json dist/",
+        "build:client": "cd client && npm run build",
+        "start": "node ./dist/server.js",
         "lint": "eslint src --ext .ts",
         "test": "vitest run --coverage",
         "test:ci": "vitest run --coverage --reporter=junit --outputFile=test-report.junit.xml",
-        "start": "node ./dist/server.js",
-        "client": "cd client && npm run dev",
-        "dev": "concurrently --kill others-on-fail \"npx tsx --env-file=.env --watch ./src/server.ts\" \"npm run client\""
+        "ci:setup": "npm run utils:clear-dist && npm i && npm run build && cd client && npm i && npm run build && cd .. && mkdir -p dist/client && cp -r client/dist dist/client/dist",
+        "utils:clear-dist": "rm -rf dist/ && rm -rf client/dist"
     },
     "dependencies": {
         "@azure/identity": "^4.13.0",
