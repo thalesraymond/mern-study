@@ -20,6 +20,11 @@ export default class Email {
         if (!email) {
             return false;
         }
+
+        if (email.length > 254) {
+            return false;
+        }
+
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
