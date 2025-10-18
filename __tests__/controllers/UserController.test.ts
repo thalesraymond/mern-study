@@ -24,6 +24,7 @@ const mockUserRepository = {
     delete: vi.fn(),
     listAll: vi.fn(),
     count: vi.fn(),
+    updateProfileImage: vi.fn(),
 } as unknown as IUserRepository;
 
 const mockJobRepository = {
@@ -183,6 +184,57 @@ describe("UserController", () => {
 
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith({ users: 10, jobs: 20 });
+        });
+    });
+
+    describe("Unauthenticated access", () => {
+        beforeEach(() => {
+            req.user = undefined;
+        });
+
+        it("getCurrentUser should throw UnauthorizedError", async () => {
+            await expect(userController.getCurrentUser(req as Request, res as Response)).rejects.toThrow(
+                "Invalid credentials"
+            );
+        });
+
+        it("updateUser should throw UnauthorizedError", async () => {
+            await expect(userController.updateUser(req as Request, res as Response)).rejects.toThrow(
+                "Invalid credentials"
+            );
+        });
+    });
+
+    describe("getCurrentUser error paths", () => {
+        it("should throw an error if the user is not found", async () => {
+            (mockUserRepository.getById as vi.Mock).mockResolvedValue(null);
+            await expect(userController.getCurrentUser(req as Request, res as Response)).rejects.toThrow(
+                "Invalid credentials"
+            );
+        });
+    });
+
+    describe("updateUser with file", () => {
+        it("should handle file upload", async () => {
+            const user = new User({
+                id: new EntityId(VALID_MONGO_ID),
+                name: "Test",
+                lastName: "User",
+                email: Email.create("test@example.com"),
+                password: UserPassword.createFromHashed("hashedPassword"),
+                role: UserRole.USER,
+                location: "Test Location",
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            });
+            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
+            req.body = { name: "Updated Name", lastName: "Last Name", location: "Updated Location"};
+            req.file = { buffer: Buffer.from("some image") } as any;
+
+            await userController.updateUser(req as Request, res as Response);
+
+            expect(res.status).toHaveBeenCalledWith(204);
+            expect(mockUserRepository.update).toHaveBeenCalledWith(expect.any(User));
         });
     });
 });

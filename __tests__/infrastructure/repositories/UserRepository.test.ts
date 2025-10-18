@@ -60,6 +60,19 @@ describe('UserRepository', () => {
             expect(result).toEqual(userDomain);
         });
 
+        it('should return null when no user is found by id', async () => {
+            const userId = new EntityId('60d5ec49e0d3f4a3c8d3e8b1');
+            mockUserModel.findById.mockReturnValue({
+                populate: vi.fn().mockResolvedValue(null)
+            });
+
+            const result = await userRepository.getById(userId);
+
+            expect(mockUserModel.findById).toHaveBeenCalledWith(userId.toString());
+            expect(mockUserAdapter.toDomain).not.toHaveBeenCalled();
+            expect(result).toBeNull();
+        });
+
         it('should return null when no user is found by email', async () => {
             const email = Email.create('notfound@example.com');
             mockUserModel.findOne.mockResolvedValue(null);
@@ -128,6 +141,27 @@ describe('UserRepository', () => {
             expect(mockUserAdapter.toDomain).toHaveBeenCalledWith(findByIdAndUpdateMock);
             expect(result).toEqual(updatedUserDomain);
         });
+
+        it('should throw a NotFoundError when the user to update is not found', async () => {
+            mockUserModel.findByIdAndUpdate.mockResolvedValue(null);
+            await expect(userRepository.update(userDomain)).rejects.toThrow(
+                `Entity with id ${userDomain.id.toString()} not found`
+            );
+        });
+
+        it('should throw an error if the entity does not have an id', async () => {
+            const userWithoutId = new User({
+                name: 'Test User',
+                lastName: 'Test',
+                email: Email.create('test@example.com'),
+                password: UserPassword.createFromHashed('hashedPassword'),
+                role: UserRole.USER,
+                location: 'Test Location',
+            });
+            await expect(userRepository.update(userWithoutId)).rejects.toThrow(
+                'Entity must have an id to be updated'
+            );
+        });
     });
 
     describe('delete', () => {
@@ -138,6 +172,12 @@ describe('UserRepository', () => {
             await userRepository.delete(userId);
 
             expect(mockUserModel.findByIdAndDelete).toHaveBeenCalledWith(userId.toString());
+        });
+
+        it('should not throw an error when deleting a non-existent user', async () => {
+            const userId = new EntityId('60d5ec49e0d3f4a3c8d3e8b1');
+            mockUserModel.findByIdAndDelete.mockResolvedValue(null);
+            await expect(userRepository.delete(userId)).resolves.not.toThrow();
         });
     });
 
@@ -177,6 +217,37 @@ describe('UserRepository', () => {
             expect(mockUserModel.find).toHaveBeenCalled();
             expect(mockUserAdapter.toDomain).toHaveBeenCalledWith(findMock);
             expect(result).toEqual([userDomain]);
+        });
+    });
+
+    describe('updateProfileImage', () => {
+        it('should update the profile image and return the user', async () => {
+            const userId = new EntityId('60d5ec49e0d3f4a3c8d3e8b1');
+            const imageId = 'newImageId';
+            const updatedUserPersistence = { ...userPersistence, imageId };
+
+            mockUserModel.findByIdAndUpdate.mockResolvedValue(updatedUserPersistence);
+
+            const result = await userRepository.updateProfileImage(userId, imageId);
+
+            expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
+                userId.toString(),
+                { imageId },
+                { new: true }
+            );
+            expect(mockUserAdapter.toDomain).toHaveBeenCalledWith(updatedUserPersistence);
+            expect(result).toEqual(userDomain);
+        });
+
+        it('should throw an error if the user is not found', async () => {
+            const userId = new EntityId('60d5ec49e0d3f4a3c8d3e8b1');
+            const imageId = 'newImageId';
+
+            mockUserModel.findByIdAndUpdate.mockResolvedValue(null);
+
+            await expect(userRepository.updateProfileImage(userId, imageId)).rejects.toThrow(
+                `User with id ${userId.toString()} not found`
+            );
         });
     });
 });

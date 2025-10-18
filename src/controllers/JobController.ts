@@ -98,6 +98,9 @@ export default class JobController {
     };
 
     public deleteJob = async (req: Request<JobParams>, res: Response<{ msg: string }>) => {
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
         const useCase = new DeleteJobUseCase(
             this.jobRepository,
             this.userRepository
