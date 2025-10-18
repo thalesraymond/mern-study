@@ -6,7 +6,11 @@ const SubmitButton = (options: { text: string; submittingText: string; aditional
     const isSubmitting = navigation.state === "submitting";
 
     return (
-        <button type="submit" className={`btn btn-block ${options.aditionalCssClasses || ""}`} disabled={isSubmitting}>
+        <button
+            type="submit"
+            className={`btn form-btn btn-block ${options.aditionalCssClasses || ""}`}
+            disabled={isSubmitting}
+        >
             {isSubmitting ? options.submittingText : options.text}
         </button>
     );

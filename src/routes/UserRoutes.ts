@@ -5,6 +5,9 @@ import AuthMiddleware from "../middleware/AuthMiddleware.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import TokenManager from "../infrastructure/security/TokenManager.js";
+import multer from "multer";
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 export default (
     userRepository: IUserRepository,
@@ -19,6 +22,7 @@ export default (
         .get(authMiddleware.authenticateUser, userController.getCurrentUser)
         .patch(
             authMiddleware.authenticateUser,
+            upload.single("avatar"),
             UserValidator.updateUserValidation(),
             userController.updateUser
         );

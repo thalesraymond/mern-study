@@ -8,6 +8,7 @@ export interface UserSchema {
     password: string;
     location: string;
     role: string;
+    imageId?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -41,6 +42,9 @@ const userSchema = new mongoose.Schema<UserSchema>(
             enum: Object.values(UserRole),
             type: String,
             default: UserRole.USER,
+        },
+        imageId: {
+            type: String,
         },
     },
     { timestamps: true }

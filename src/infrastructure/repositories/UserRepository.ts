@@ -4,11 +4,10 @@ import Repository from "./Repository.js";
 import UserModel, { UserSchema } from "../models/users/UserModel.js";
 import UserAdapter from "../adapters/UserAdapter.js";
 import Email from "../../domain/entities/Email.js";
+import BadRequestError from "../../errors/BadRequestError.js";
+import { EntityId } from "../../domain/entities/EntityId.js";
 
-export default class UserRepository
-    extends Repository<User, UserSchema>
-    implements IUserRepository
-{
+export default class UserRepository extends Repository<User, UserSchema> implements IUserRepository {
     constructor() {
         super(UserModel, new UserAdapter());
     }
@@ -22,6 +21,23 @@ export default class UserRepository
     }
 
     async count(): Promise<number> {
-        return this.model.countDocuments();
+        return await this.model.countDocuments();
     }
+
+    async updateProfileImage(userId: EntityId, imageId: string): Promise<User> {
+        const user = await this.model.findByIdAndUpdate(
+            userId.toString(),
+            { imageId },
+            { new: true }
+        );
+
+        if (!user) {
+            throw new BadRequestError(`User with id ${userId.toString()} not found`);
+        }
+
+        return this.adapter.toDomain(user);
+
+    }
+
+
 }

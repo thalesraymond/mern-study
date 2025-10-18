@@ -17,6 +17,7 @@ export default class UserAdapter extends Adapter<User, UserSchema> {
             password: UserPassword.createFromHashed(raw.password),
             location: raw.location,
             role: raw.role as UserRole,
+            imageId: raw.imageId,
             createdAt: raw.createdAt,
             updatedAt: raw.updatedAt,
         });
@@ -30,6 +31,7 @@ export default class UserAdapter extends Adapter<User, UserSchema> {
             password: user.password.hashedPassword,
             location: user.location,
             role: user.role,
+            imageId: user.imageId,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
         };

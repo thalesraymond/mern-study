@@ -4,12 +4,13 @@ import { UpdateUserPayload, UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
-import User from "../domain/entities/User.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import RegisterUserUseCase from "../appUseCases/RegisterUserUseCase.js";
 import PasswordManager from "../infrastructure/security/PasswordManager.js";
 import LoginUserUseCase from "../appUseCases/LoginUserUseCase.js";
 import TokenManager from "../infrastructure/security/TokenManager.js";
+import { UpdateUserUseCase } from "../appUseCases/UpdateUserUseCase.js";
+import AzureStorageService from "../infrastructure/azure/AzureStorageService.js";
 
 export default class UserController {
     constructor(
@@ -82,6 +83,7 @@ export default class UserController {
                 email: user.email.getValue(),
                 location: user.location,
                 role: user.role.toString(),
+                imageId: user.imageId,
             },
         });
     };
@@ -91,20 +93,11 @@ export default class UserController {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        const userToUpdate = await this.userRepository.getById(new EntityId(req.user.userId));
+        const useCase = new UpdateUserUseCase(this.userRepository, new AzureStorageService());
 
-        if (!userToUpdate) {
-            throw new UnauthorizedError("Invalid credentials");
-        }
+        const imageBuffer = req.file ? req.file.buffer : undefined;
 
-        const updatedUser = new User({
-            ...userToUpdate,
-            ...req.body,
-            id: userToUpdate.id,
-            email: userToUpdate.email, // email cannot be updated
-        });
-
-        await this.userRepository.update(updatedUser);
+        await useCase.execute(req.user.userId, imageBuffer);
 
         return res.status(StatusCodes.NO_CONTENT).json({});
     };

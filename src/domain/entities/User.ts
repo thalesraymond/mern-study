@@ -11,6 +11,7 @@ export default class User extends Entity {
     public readonly password: UserPassword;
     public readonly location: string;
     public readonly role: UserRole;
+    public readonly imageId?: string;
 
     constructor({
         name,
@@ -20,6 +21,7 @@ export default class User extends Entity {
         location,
         id,
         role,
+        imageId,
         createdAt,
         updatedAt,
     }: {
@@ -30,6 +32,7 @@ export default class User extends Entity {
         location: string;
         id?: EntityId;
         role: UserRole;
+        imageId?: string;
         createdAt: Date;
         updatedAt: Date;
     }) {
@@ -44,6 +47,7 @@ export default class User extends Entity {
         this.password = password;
         this.location = location;
         this.role = role;
+        this.imageId = imageId;
         this.validate();
     }
 
