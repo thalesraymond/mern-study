@@ -20,6 +20,7 @@ const DashboardLayout = () => {
             location: string;
             email: string;
             role: string;
+            imageId: string;
         };
     } = useLoaderData();
     const user = loaderData.user;

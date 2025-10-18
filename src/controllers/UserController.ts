@@ -4,17 +4,19 @@ import { UpdateUserPayload, UserPayload } from "../requests/UserRequest.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
-import User from "../domain/entities/User.js";
 import { EntityId } from "../domain/entities/EntityId.js";
 import RegisterUserUseCase from "../appUseCases/RegisterUserUseCase.js";
 import PasswordManager from "../infrastructure/security/PasswordManager.js";
 import LoginUserUseCase from "../appUseCases/LoginUserUseCase.js";
 import TokenManager from "../infrastructure/security/TokenManager.js";
+import { UpdateUserUseCase } from "../appUseCases/UpdateUserUseCase.js";
+import { IStorageService } from "../domain/services/IStorageService.js";
 
 export default class UserController {
     constructor(
         private readonly userRepository: IUserRepository,
-        private readonly jobRepository: IJobRepository
+        private readonly jobRepository: IJobRepository,
+        private readonly storageService: IStorageService
     ) {}
 
     public register = async (
@@ -82,6 +84,7 @@ export default class UserController {
                 email: user.email.getValue(),
                 location: user.location,
                 role: user.role.toString(),
+                imageId: user.imageId,
             },
         });
     };
@@ -91,20 +94,18 @@ export default class UserController {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        const userToUpdate = await this.userRepository.getById(new EntityId(req.user.userId));
+        const useCase = new UpdateUserUseCase(this.userRepository, this.storageService);
 
-        if (!userToUpdate) {
-            throw new UnauthorizedError("Invalid credentials");
-        }
+        const imageBuffer = req.file ? req.file.buffer : undefined;
 
-        const updatedUser = new User({
-            ...userToUpdate,
-            ...req.body,
-            id: userToUpdate.id,
-            email: userToUpdate.email, // email cannot be updated
+        await useCase.execute({
+            id: req.user.userId,
+            name: req.body.name,
+            lastName: req.body.lastName ?? "",
+            email: req.body.email,
+            location: req.body.location ?? "",
+            profileImageBuffer: imageBuffer,
         });
-
-        await this.userRepository.update(updatedUser);
 
         return res.status(StatusCodes.NO_CONTENT).json({});
     };
@@ -114,5 +115,15 @@ export default class UserController {
         const jobs = await this.jobRepository.count();
 
         return res.status(StatusCodes.OK).json({ users, jobs });
+    };
+
+    public getProfileImage = async (req: Request, res: Response) => {
+        const userData = await this.userRepository.getById(new EntityId(req.user?.userId ?? ""));
+
+        const imageBuffer = await this.storageService.getFile(userData?.imageId ?? "");
+
+        res.setHeader("Content-Type", "image/png");
+
+        return res.send(imageBuffer);
     };
 }
