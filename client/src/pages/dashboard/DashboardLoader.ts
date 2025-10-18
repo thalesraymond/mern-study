@@ -9,7 +9,7 @@ const dashboardLoader = async () => {
         return {
             user: {
                 name: "Guest User",
-                role: "guest",
+                role: "user",
                 imageId: "",
             },
         };

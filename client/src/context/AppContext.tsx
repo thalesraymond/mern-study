@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 type AppContextType = {
     isExplore: boolean;
@@ -7,7 +7,7 @@ type AppContextType = {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
+export const AppProvider = ({ children }: { children: ReactNode }) => {
     const [isExplore, setIsExplore] = useState(() => {
         const stored = localStorage.getItem("isExplore");
         return stored ? JSON.parse(stored) : false;
@@ -17,11 +17,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
         localStorage.setItem("isExplore", JSON.stringify(isExplore));
     }, [isExplore]);
 
-    return (
-        <AppContext.Provider value={{ isExplore, setIsExplore }}>
-            {children}
-        </AppContext.Provider>
-    );
+    return <AppContext.Provider value={{ isExplore, setIsExplore }}>{children}</AppContext.Provider>;
 };
 
 export const useAppContext = () => {
