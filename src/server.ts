@@ -12,6 +12,7 @@ import ErrorHandlerMiddleware from "./middleware/ErrorHandlerMiddleware.js";
 import authRoutes from "./routes/AuthRoutes.js";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/UserRoutes.js";
+import limiter from "./middleware/rateLimiter.js";
 // end routes
 
 import UserRepository from "./infrastructure/repositories/UserRepository.js";
@@ -46,6 +47,8 @@ app.get(/^\/(?!api).*/, (req, res) => {
 app.use("/api/v1/test", (req, res) => {
     return res.status(StatusCodes.OK).json({ msg: "test" });
 });
+
+app.use("/api", limiter);
 
 const storageService = new AzureStorageService();
 
