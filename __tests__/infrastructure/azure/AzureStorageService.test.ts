@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import AzureStorageService from '../../../dist/infrastructure/azure/AzureStorageService.js';
-import { BlobServiceClient, BlockBlobClient } from '@azure/storage-blob';
+import AzureStorageService from '../../../src/infrastructure/azure/AzureStorageService.js';
+import { BlobServiceClient } from '@azure/storage-blob';
 
 vi.mock('@azure/storage-blob');
 

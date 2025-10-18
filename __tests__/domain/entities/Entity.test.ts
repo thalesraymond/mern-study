@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { Entity } from '../../../dist/domain/entities/Entity.js';
-import { EntityId } from '../../../dist/domain/entities/EntityId.js';
+import { Entity } from '../../../src/domain/entities/Entity.js';
+import { EntityId } from '../../../src/domain/entities/EntityId.js';
 
 class ConcreteEntity extends Entity {
     constructor(props: { id?: EntityId; createdAt: Date; updatedAt: Date }) {
