@@ -49,18 +49,18 @@ export default class Repository<
         let id;
         try {
             id = entity.id;
-        } catch (error) {
+        } catch {
             throw new Error("Entity must have an id to be updated");
         }
         const persistenceEntity = this.adapter.toPersistence(entity);
         const document = await this.model.findByIdAndUpdate(
-            entity.id.toString(),
+            id.toString(),
             persistenceEntity,
             { new: true }
         );
         if (!document) {
             throw new NotFoundError(
-                `Entity with id ${entity.id.toString()} not found`
+                `Entity with id ${id.toString()} not found`
             );
         }
         return await this.adapter.toDomain(document);
