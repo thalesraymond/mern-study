@@ -33,6 +33,8 @@ jobs:
                   name: node-app
                   path: |
                       .
+                      !node_modules/**
+                      !client/node_modules/**
 
     deploy:
         runs-on: ubuntu-latest
