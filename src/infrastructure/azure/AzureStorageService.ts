@@ -1,5 +1,4 @@
 import { BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
-import { DefaultAzureCredential } from "@azure/identity";
 import { randomUUID } from "crypto";
 
 import { IStorageService } from "../../domain/services/IStorageService.js";
