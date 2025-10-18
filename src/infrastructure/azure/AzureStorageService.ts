@@ -2,24 +2,16 @@ import { BlobServiceClient, BlockBlobClient } from "@azure/storage-blob";
 import { DefaultAzureCredential } from "@azure/identity";
 import { randomUUID } from "crypto";
 
-import { IStorageService } from '../../domain/services/IStorageService.js';
+import { IStorageService } from "../../domain/services/IStorageService.js";
 
 export default class AzureStorageService implements IStorageService {
     private readonly blobServiceClient: BlobServiceClient;
     private readonly containerName = "jobifyprofilepictures";
 
     constructor() {
-        if (process.env.NODE_ENV === "development") {
-            const connStr = process.env.AZURE_STORAGE_CONNECTION_STRING;
-            this.blobServiceClient = BlobServiceClient.fromConnectionString(connStr ?? "");
-        } else {
-            const accountUrl = `https://${this.containerName}.blob.core.windows.net`;
-            const credential = new DefaultAzureCredential();
-
-            this.blobServiceClient = new BlobServiceClient(accountUrl, credential);
-        }
+        const connStr = process.env.AZURE_STORAGE_CONNECTION_STRING;
+        this.blobServiceClient = BlobServiceClient.fromConnectionString(connStr ?? "");
     }
-
 
     private getBlockBlobClient(blobName: string): BlockBlobClient {
         const containerClient = this.blobServiceClient.getContainerClient(this.containerName);
@@ -36,7 +28,7 @@ export default class AzureStorageService implements IStorageService {
     public async deleteFile(imageId: string): Promise<void> {
         const blockBlobClient = this.getBlockBlobClient(imageId);
 
-        await blockBlobClient.deleteIfExists()
+        await blockBlobClient.deleteIfExists();
     }
 
     public async getFile(blobName: string): Promise<Buffer> {
