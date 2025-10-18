@@ -1,3 +1,4 @@
+import path from "path";
 import express from "express";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
@@ -15,7 +16,7 @@ import userRoutes from "./routes/UserRoutes.js";
 
 import UserRepository from "./infrastructure/repositories/UserRepository.js";
 import JobRepository from "./infrastructure/repositories/JobRepository.js";
-import path from "path";
+import AzureStorageService from "./infrastructure/azure/AzureStorageService.js";
 
 const app = express();
 
@@ -49,7 +50,7 @@ app.use("/api/v1/register", registerRoutes(userRepository, jobRepository));
 
 app.use("/api/v1/jobs", jobRoutes(jobRepository, userRepository));
 
-app.use("/api/v1/user", userRoutes(userRepository, jobRepository));
+app.use("/api/v1/user", userRoutes(userRepository, jobRepository, new AzureStorageService()));
 
 app.use((_req, res) => {
     return res.status(StatusCodes.NOT_FOUND).json({ msg: "Not Found" });

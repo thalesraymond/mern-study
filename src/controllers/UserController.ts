@@ -10,12 +10,13 @@ import PasswordManager from "../infrastructure/security/PasswordManager.js";
 import LoginUserUseCase from "../appUseCases/LoginUserUseCase.js";
 import TokenManager from "../infrastructure/security/TokenManager.js";
 import { UpdateUserUseCase } from "../appUseCases/UpdateUserUseCase.js";
-import AzureStorageService from "../infrastructure/azure/AzureStorageService.js";
+import { IStorageService } from "../domain/services/IStorageService.js";
 
 export default class UserController {
     constructor(
         private readonly userRepository: IUserRepository,
-        private readonly jobRepository: IJobRepository
+        private readonly jobRepository: IJobRepository,
+        private readonly storageService: IStorageService
     ) {}
 
     public register = async (
@@ -93,7 +94,7 @@ export default class UserController {
             throw new UnauthorizedError("Invalid credentials");
         }
 
-        const useCase = new UpdateUserUseCase(this.userRepository, new AzureStorageService());
+        const useCase = new UpdateUserUseCase(this.userRepository, this.storageService);
 
         const imageBuffer = req.file ? req.file.buffer : undefined;
 
@@ -107,5 +108,15 @@ export default class UserController {
         const jobs = await this.jobRepository.count();
 
         return res.status(StatusCodes.OK).json({ users, jobs });
+    };
+
+    public getProfileImage = async (req: Request, res: Response) => {
+        const userData = await this.userRepository.getById(new EntityId(req.user?.userId ?? ""));
+
+        const imageBuffer = await this.storageService.getFile(userData?.imageId ?? "");
+
+        res.setHeader("Content-Type", "image/png");
+
+        return res.send(imageBuffer);
     };
 }
