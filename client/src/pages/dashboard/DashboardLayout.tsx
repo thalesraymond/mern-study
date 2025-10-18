@@ -3,6 +3,7 @@ import Wrapper from "../../assets/wrappers/Dashboard";
 import { BigSidebar, Navbar, SmallSidebar } from "../../components";
 import { useState } from "react";
 import DashboardContext from "./DashboardContext";
+import { useAppContext } from "../../context/AppContext";
 import { getSavedDarkTheme } from "../../DarkThemeSwitcher";
 import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
@@ -41,7 +42,11 @@ const DashboardLayout = () => {
         setShowSidebar(!showSidebar);
     };
 
+    const { setIsExplore } = useAppContext();
+
     const logoutUser = async () => {
+        setIsExplore(false);
+
         navigate("/");
 
         apiClient.get("/auth/logout");
