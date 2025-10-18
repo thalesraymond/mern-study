@@ -46,7 +46,10 @@ export default class Repository<
     }
 
     async update(entity: TDomain): Promise<TDomain> {
-        if (!entity.id) {
+        let id;
+        try {
+            id = entity.id;
+        } catch (error) {
             throw new Error("Entity must have an id to be updated");
         }
         const persistenceEntity = this.adapter.toPersistence(entity);

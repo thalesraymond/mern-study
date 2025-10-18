@@ -151,4 +151,40 @@ describe('JobController', () => {
             expect(res.json).toHaveBeenCalledWith({ job: expect.any(Object) });
         });
     });
+
+    describe('Unauthenticated access', () => {
+        beforeEach(() => {
+            req.user = undefined;
+        });
+
+        it('getAllJobs should throw UnauthenticatedError', async () => {
+            await expect(jobController.getAllJobs(req as Request, res as Response)).rejects.toThrow(
+                'Authentication Invalid'
+            );
+        });
+
+        it('createJob should throw UnauthenticatedError', async () => {
+            await expect(jobController.createJob(req as Request, res as Response)).rejects.toThrow(
+                'Authentication Invalid'
+            );
+        });
+
+        it('getJobById should throw UnauthenticatedError', async () => {
+            await expect(jobController.getJobById(req as Request, res as Response)).rejects.toThrow(
+                'Authentication Invalid'
+            );
+        });
+
+        it('updateJob should throw UnauthenticatedError', async () => {
+            await expect(jobController.updateJob(req as Request, res as Response)).rejects.toThrow(
+                'Authentication Invalid'
+            );
+        });
+
+        it('deleteJob should throw UnauthenticatedError', async () => {
+            await expect(jobController.deleteJob(req as Request, res as Response)).rejects.toThrow(
+                'Authentication Invalid'
+            );
+        });
+    });
 });
