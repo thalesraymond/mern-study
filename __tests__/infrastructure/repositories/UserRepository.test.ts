@@ -24,6 +24,8 @@ describe('UserRepository', () => {
         role: UserRole.USER,
         location: 'Test Location',
         id: new EntityId('60d5ec49e0d3f4a3c8d3e8b1'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     const userPersistence = {
@@ -38,11 +40,11 @@ describe('UserRepository', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        userRepository = new UserRepository();
         mockUserModel = UserModel;
         mockUserAdapter = new UserAdapter();
-        userRepository['model'] = mockUserModel;
-        userRepository['adapter'] = mockUserAdapter;
+        userRepository = new UserRepository();
+        (userRepository as any).model = mockUserModel;
+        (userRepository as any).adapter = mockUserAdapter;
 
         vi.spyOn(mockUserAdapter, 'toDomain').mockResolvedValue(userDomain);
         vi.spyOn(mockUserAdapter, 'toPersistence').mockReturnValue(userPersistence);
@@ -119,6 +121,8 @@ describe('UserRepository', () => {
                 password: userDomain.password,
                 role: userDomain.role,
                 location: userDomain.location,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
             const updatedUserPersistence = { ...userPersistence, name: 'Updated User' };
 
@@ -157,6 +161,8 @@ describe('UserRepository', () => {
                 password: UserPassword.createFromHashed('hashedPassword'),
                 role: UserRole.USER,
                 location: 'Test Location',
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
             await expect(userRepository.update(userWithoutId)).rejects.toThrow(
                 'Entity must have an id to be updated'

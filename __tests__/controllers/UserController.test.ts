@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { Request, Response } from "express";
 import UserController from "../../src/controllers/UserController.js";
 import { IUserRepository } from "../../src/domain/repositories/IUserRepository.js";
@@ -86,7 +86,7 @@ describe("UserController", () => {
             const mockRegisterUserUseCaseInstance = {
                 execute: vi.fn().mockResolvedValue(userDTO),
             };
-            (RegisterUserUseCase as vi.Mock).mockImplementation(() => mockRegisterUserUseCaseInstance);
+            (RegisterUserUseCase as Mock).mockImplementation(() => mockRegisterUserUseCaseInstance);
 
             await userController.register(req as Request, res as Response);
 
@@ -103,7 +103,7 @@ describe("UserController", () => {
             const mockLoginUserUseCaseInstance = {
                 execute: vi.fn().mockResolvedValue({ token: "some-token" }),
             };
-            (LoginUserUseCase as vi.Mock).mockImplementation(() => mockLoginUserUseCaseInstance);
+            (LoginUserUseCase as Mock).mockImplementation(() => mockLoginUserUseCaseInstance);
 
             await userController.auth(req as Request, res as Response);
 
@@ -133,8 +133,10 @@ describe("UserController", () => {
                 password: UserPassword.createFromHashed("hashedPassword"),
                 role: UserRole.USER,
                 location: "Test Location",
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
 
             await userController.getCurrentUser(req as Request, res as Response);
 
@@ -165,8 +167,8 @@ describe("UserController", () => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            req.body = { name: "Updated Name", lastName: "Last Name", location: "Updated Location"};
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            req.body = { name: "Updated Name", lastName: "Last Name", location: "Updated Location" };
 
             await userController.updateUser(req as Request, res as Response);
 
@@ -177,8 +179,8 @@ describe("UserController", () => {
 
     describe("getAppStats", () => {
         it("should return a 200 status code with user and job counts", async () => {
-            (mockUserRepository.count as vi.Mock).mockResolvedValue(10);
-            (mockJobRepository.count as vi.Mock).mockResolvedValue(20);
+            (mockUserRepository.count as Mock).mockResolvedValue(10);
+            (mockJobRepository.count as Mock).mockResolvedValue(20);
 
             await userController.getAppStats(req as Request, res as Response);
 
@@ -207,7 +209,7 @@ describe("UserController", () => {
 
     describe("getCurrentUser error paths", () => {
         it("should throw an error if the user is not found", async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.getById as Mock).mockResolvedValue(null);
             await expect(userController.getCurrentUser(req as Request, res as Response)).rejects.toThrow(
                 "Invalid credentials"
             );
@@ -227,8 +229,8 @@ describe("UserController", () => {
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            req.body = { name: "Updated Name", lastName: "Last Name", location: "Updated Location"};
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            req.body = { name: "Updated Name", lastName: "Last Name", location: "Updated Location" };
             req.file = { buffer: Buffer.from("some image") } as any;
 
             await userController.updateUser(req as Request, res as Response);

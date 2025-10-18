@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import PasswordManager from "../../../dist/infrastructure/security/PasswordManager.js";
+import PasswordManager from "../../../src/infrastructure/security/PasswordManager.js";
 
 describe("PasswordManager", () => {
     const passwordManager = new PasswordManager();

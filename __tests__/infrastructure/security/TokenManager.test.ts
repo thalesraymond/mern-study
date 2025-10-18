@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import TokenManager from "../../../dist/infrastructure/security/TokenManager.js";
+import TokenManager from "../../../src/infrastructure/security/TokenManager.js";
 import jwt from "jsonwebtoken";
 
 vi.mock("jsonwebtoken");
@@ -10,7 +10,7 @@ describe("TokenManager", () => {
 
     it("should generate a token", () => {
         const mockToken = "mockToken";
-        vi.spyOn(jwt, "sign").mockReturnValue(mockToken);
+        vi.spyOn(jwt, "sign").mockImplementation(() => mockToken);
         const token = tokenManager.generateToken(payload);
         expect(token).toBe(mockToken);
         expect(token).toBeTypeOf("string");
@@ -18,7 +18,7 @@ describe("TokenManager", () => {
 
     it("should verify a token", () => {
         const mockDecoded = { userId: "123", role: "user" };
-        vi.spyOn(jwt, "verify").mockReturnValue(mockDecoded);
+        vi.spyOn(jwt, "verify").mockImplementation(() => mockDecoded);
         const token = tokenManager.generateToken(payload);
         const decoded = tokenManager.verifyToken(token);
         expect(decoded).toEqual(mockDecoded);

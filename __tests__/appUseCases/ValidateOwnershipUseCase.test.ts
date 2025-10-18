@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import ValidateOwnershipUseCase from '../../src/appUseCases/ValidateOwnershipUseCase.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
 import User from '../../src/domain/entities/User.js';
@@ -17,6 +17,7 @@ const mockUserRepository: IUserRepository = {
     listAll: vi.fn(),
     count: vi.fn(),
     findByEmail: vi.fn(),
+    updateProfileImage: vi.fn(),
 };
 
 describe('ValidateOwnershipUseCase', () => {
@@ -34,10 +35,32 @@ describe('ValidateOwnershipUseCase', () => {
         password: UserPassword.createFromHashed('hashedPassword'),
         role: UserRole.USER,
         location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
-    const adminUser = new User({ ...user, id: new EntityId(adminId), role: UserRole.ADMIN });
-    const ownerUser = new User({ ...user, id: new EntityId(documentOwnerId) });
+    const adminUser = new User({
+        id: new EntityId(adminId),
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        role: UserRole.ADMIN,
+        location: user.location,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    });
+    const ownerUser = new User({
+        id: new EntityId(documentOwnerId),
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        role: user.role,
+        location: user.location,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    });
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -46,25 +69,25 @@ describe('ValidateOwnershipUseCase', () => {
 
     describe('execute', () => {
         it('should not throw an error if the user is the owner', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(ownerUser);
+            (mockUserRepository.getById as Mock).mockResolvedValue(ownerUser);
 
             await expect(validateOwnershipUseCase.execute(ownerUser.id, ownerUser.id)).resolves.toBeUndefined();
         });
 
         it('should not throw an error if the user is an admin', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(adminUser);
+            (mockUserRepository.getById as Mock).mockResolvedValue(adminUser);
 
             await expect(validateOwnershipUseCase.execute(adminUser.id, ownerUser.id)).resolves.toBeUndefined();
         });
 
         it('should throw UnauthorizedError if the user is not the owner and not an admin', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
 
             await expect(validateOwnershipUseCase.execute(user.id, ownerUser.id)).rejects.toThrow(UnauthorizedError);
         });
 
         it('should throw UnauthenticatedError if the user is not found', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.getById as Mock).mockResolvedValue(null);
 
             await expect(validateOwnershipUseCase.execute(new EntityId('60d5ec49e0d3f4a3c8d3e8b4'), ownerUser.id)).rejects.toThrow(UnauthenticatedError);
         });
