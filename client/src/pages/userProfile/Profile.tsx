@@ -1,13 +1,11 @@
 import { FormRow, SubmitButton } from "../../components";
 import Wrapper from "../../assets/wrappers/DashboardFormPage";
 import { useOutletContext } from "react-router-dom";
-import { useNavigation, Form } from "react-router-dom";
+import { Form } from "react-router-dom";
 
 const Profile = () => {
     const { user }: any = useOutletContext();
     const { name, lastName, email, location } = user;
-    const navigation = useNavigation();
-    const isSubmitting = navigation.state === "submitting";
     return (
         <Wrapper>
             <Form method="post" className="form" encType="multipart/form-data">
