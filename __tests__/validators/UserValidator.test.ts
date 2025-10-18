@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { body } from "express-validator";
 import UserValidator from "../../src/validators/UserValidator.js";
 import UserModel from "../../src/infrastructure/models/users/UserModel.js";
@@ -36,7 +36,7 @@ describe("UserValidator", () => {
     beforeEach(() => {
         vi.clearAllMocks();
         Object.values(validatorChain).forEach(mockFn => mockFn.mockClear());
-        (UserModel.exists as vi.Mock).mockClear();
+        (UserModel.exists as Mock).mockClear();
     });
 
     describe("registerUserValidation", () => {
@@ -56,10 +56,10 @@ describe("UserValidator", () => {
 
             const emailValidator = (validatorChain.custom.mock.calls[0][0]) as (email: string) => Promise<void>;
 
-            (UserModel.exists as vi.Mock).mockResolvedValue(null);
+            (UserModel.exists as Mock).mockResolvedValue(null);
             await expect(emailValidator("test@test.com")).resolves.not.toThrow();
 
-            (UserModel.exists as vi.Mock).mockResolvedValue({ _id: "someid" });
+            (UserModel.exists as Mock).mockResolvedValue({ _id: "someid" });
             await expect(emailValidator("test@test.com")).rejects.toThrow(new BadRequestError("email already registered"));
         });
     });
@@ -82,10 +82,10 @@ describe("UserValidator", () => {
             const emailValidator = (validatorChain.custom.mock.calls[0][0]) as (email: string, { req }: any) => Promise<void>;
             const mockReq = { user: { userId: "123" } };
 
-            (UserModel.exists as vi.Mock).mockResolvedValue(null);
+            (UserModel.exists as Mock).mockResolvedValue(null);
             await expect(emailValidator("test@test.com", { req: mockReq })).resolves.not.toThrow();
 
-            (UserModel.exists as vi.Mock).mockResolvedValue({ _id: "someotherid" });
+            (UserModel.exists as Mock).mockResolvedValue({ _id: "someotherid" });
             await expect(emailValidator("test@test.com", { req: mockReq })).rejects.toThrow(new BadRequestError("email already registered"));
             expect(UserModel.exists).toHaveBeenCalledWith({ email: "test@test.com", _id: { $ne: "123" } });
         });

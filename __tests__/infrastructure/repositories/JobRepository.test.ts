@@ -6,6 +6,10 @@ import Job from '../../../src/domain/entities/Job.js';
 import { EntityId } from '../../../src/domain/entities/EntityId.js';
 import JobStatus from '../../../src/infrastructure/models/jobs/JobStatus.js';
 import JobType from '../../../src/infrastructure/models/jobs/JobType.js';
+import User from '../../../src/domain/entities/User.js';
+import Email from '../../../src/domain/entities/Email.js';
+import UserPassword from '../../../src/domain/entities/UserPassword.js';
+import UserRole from '../../../src/domain/entities/UserRole.js';
 
 vi.mock('../../../src/infrastructure/models/jobs/JobModel.js');
 vi.mock('../../../src/infrastructure/adapters/JobAdapter.js');
@@ -21,8 +25,20 @@ describe('JobRepository', () => {
         status: JobStatus.PENDING,
         jobType: JobType.FULL_TIME,
         location: 'Test Location',
-        createdBy: new EntityId('60d5ec49e0d3f4a3c8d3e8b2'),
+        createdBy: new User({
+            id: new EntityId('60d5ec49e0d3f4a3c8d3e8b2'),
+            name: 'test',
+            lastName: 'test',
+            email: Email.create('test@test.com'),
+            password: UserPassword.createFromHashed('test'),
+            location: 'test',
+            role: UserRole.USER,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }),
         id: new EntityId('60d5ec49e0d3f4a3c8d3e8b1'),
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     const jobPersistence = {
@@ -37,11 +53,11 @@ describe('JobRepository', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        jobRepository = new JobRepository();
         mockJobModel = JobModel;
         mockJobAdapter = new JobAdapter();
-        jobRepository['model'] = mockJobModel;
-        jobRepository['adapter'] = mockJobAdapter;
+        jobRepository = new JobRepository();
+        (jobRepository as any).model = mockJobModel;
+        (jobRepository as any).adapter = mockJobAdapter;
 
         vi.spyOn(mockJobAdapter, 'toDomain').mockResolvedValue(jobDomain);
         vi.spyOn(mockJobAdapter, 'toPersistence').mockReturnValue(jobPersistence);

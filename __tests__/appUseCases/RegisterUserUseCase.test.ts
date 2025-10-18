@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import RegisterUserUseCase from '../../src/appUseCases/RegisterUserUseCase.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
 import IPasswordManager from '../../src/domain/services/IPasswordManager.js';
@@ -17,6 +17,7 @@ const mockUserRepository: IUserRepository = {
     getById: vi.fn(),
     listAll: vi.fn(),
     count: vi.fn(),
+    updateProfileImage: vi.fn(),
 };
 
 const mockPasswordManager: IPasswordManager = {
@@ -48,10 +49,12 @@ describe('RegisterUserUseCase', () => {
                 email: Email.create(request.email),
                 password: UserPassword.createFromHashed('hashedPassword'),
                 role: UserRole.USER,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
 
-            (mockUserRepository.findByEmail as vi.Mock).mockResolvedValue(null);
-            (mockUserRepository.create as vi.Mock).mockResolvedValue(user);
+            (mockUserRepository.findByEmail as Mock).mockResolvedValue(null);
+            (mockUserRepository.create as Mock).mockResolvedValue(user);
 
             const result = await registerUserUseCase.execute(request);
 
@@ -69,9 +72,11 @@ describe('RegisterUserUseCase', () => {
                 email: Email.create(request.email),
                 password: UserPassword.createFromHashed('hashedPassword'),
                 role: UserRole.USER,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
 
-            (mockUserRepository.findByEmail as vi.Mock).mockResolvedValue(existingUser);
+            (mockUserRepository.findByEmail as Mock).mockResolvedValue(existingUser);
 
             await expect(registerUserUseCase.execute(request)).rejects.toThrow(BadRequestError);
             expect(mockUserRepository.create).not.toHaveBeenCalled();

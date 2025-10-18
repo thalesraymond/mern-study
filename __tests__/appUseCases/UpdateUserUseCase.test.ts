@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { UpdateUserUseCase } from '../../dist/appUseCases/UpdateUserUseCase.js';
-import { IUserRepository } from '../../dist/domain/repositories/IUserRepository.js';
-import { IStorageService } from '../../dist/domain/services/IStorageService.js';
-import User from '../../dist/domain/entities/User.js';
-import Email from '../../dist/domain/entities/Email.js';
-import { EntityId } from '../../dist/domain/entities/EntityId.js';
-import UserPassword from '../../dist/domain/entities/UserPassword.js';
-import UserRole from '../../dist/domain/entities/UserRole.js';
-import BadRequestError from '../../dist/errors/BadRequestError.js';
+import { UpdateUserUseCase } from '../../src/appUseCases/UpdateUserUseCase.js';
+import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
+import { IStorageService } from '../../src/domain/services/IStorageService.js';
+import User from '../../src/domain/entities/User.js';
+import Email from '../../src/domain/entities/Email.js';
+import { EntityId } from '../../src/domain/entities/EntityId.js';
+import UserPassword from '../../src/domain/entities/UserPassword.js';
+import UserRole from '../../src/domain/entities/UserRole.js';
+import BadRequestError from '../../src/errors/BadRequestError.js';
 
 describe('UpdateUserUseCase', () => {
     let updateUserUseCase: UpdateUserUseCase;
@@ -22,6 +22,8 @@ describe('UpdateUserUseCase', () => {
         password: UserPassword.createFromHashed('hashedPassword'),
         role: UserRole.USER,
         location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     beforeEach(() => {
@@ -91,6 +93,8 @@ describe('UpdateUserUseCase', () => {
             role: user.role,
             location: user.location,
             imageId: 'old_image_id',
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
         });
         const updateUserRequest = {
             id: '60d5ec49e0d3f4a3c8d3e8b1',

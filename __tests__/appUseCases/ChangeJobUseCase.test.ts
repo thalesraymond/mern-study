@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import ChangeJobUseCase, { ChangeJobRequest } from '../../src/appUseCases/ChangeJobUseCase.js';
 import { IJobRepository } from '../../src/domain/repositories/IJobRepository.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
@@ -19,6 +19,8 @@ const mockJobRepository: IJobRepository = {
     getById: vi.fn(),
     listAll: vi.fn(),
     count: vi.fn(),
+    findByIdAndOwner: vi.fn(),
+    listByOwner: vi.fn(),
 };
 
 const mockUserRepository: IUserRepository = {
@@ -29,6 +31,7 @@ const mockUserRepository: IUserRepository = {
     listAll: vi.fn(),
     count: vi.fn(),
     findByEmail: vi.fn(),
+    updateProfileImage: vi.fn(),
 };
 
 describe('ChangeJobUseCase', () => {
@@ -47,6 +50,8 @@ describe('ChangeJobUseCase', () => {
         password: UserPassword.createFromHashed('hashedPassword'),
         role: UserRole.USER,
         location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     const job = new Job({
@@ -57,6 +62,8 @@ describe('ChangeJobUseCase', () => {
         jobType: JobType.FULL_TIME,
         location: 'Test Location',
         createdBy: user,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     beforeEach(() => {
@@ -75,8 +82,8 @@ describe('ChangeJobUseCase', () => {
                 location: 'New Location',
             };
 
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.create as vi.Mock).mockImplementation(job => Promise.resolve(job));
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.create as Mock).mockImplementation(job => Promise.resolve(job));
 
             const result = await changeJobUseCase.execute(request);
 
@@ -98,9 +105,9 @@ describe('ChangeJobUseCase', () => {
                 location: 'Updated Location',
             };
 
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(job);
-            (mockJobRepository.update as vi.Mock).mockImplementation(job => Promise.resolve(job));
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.getById as Mock).mockResolvedValue(job);
+            (mockJobRepository.update as Mock).mockImplementation(job => Promise.resolve(job));
             vi.spyOn(changeJobUseCase['validateOwnership'], 'execute').mockResolvedValue();
 
 
@@ -124,7 +131,7 @@ describe('ChangeJobUseCase', () => {
                 location: 'Test Location',
             };
 
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.getById as Mock).mockResolvedValue(null);
 
             await expect(changeJobUseCase.execute(request)).rejects.toThrow(UnauthenticatedError);
         });
@@ -140,8 +147,8 @@ describe('ChangeJobUseCase', () => {
                 location: 'Test Location',
             };
 
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.getById as Mock).mockResolvedValue(null);
 
             await expect(changeJobUseCase.execute(request)).rejects.toThrow(NotFoundError);
         });
@@ -155,9 +162,21 @@ describe('ChangeJobUseCase', () => {
                 password: UserPassword.createFromHashed('hashedPassword'),
                 role: UserRole.USER,
                 location: 'Other Location',
+                createdAt: new Date(),
+                updatedAt: new Date(),
             });
 
-            const jobOwnedByOther = new Job({ ...job, createdBy: otherUser });
+            const jobOwnedByOther = new Job({
+                id: job.id,
+                company: job.company,
+                position: job.position,
+                status: job.status,
+                jobType: job.jobType,
+                location: job.location,
+                createdBy: otherUser,
+                createdAt: job.createdAt,
+                updatedAt: job.updatedAt,
+            });
 
             const request: ChangeJobRequest = {
                 userId,
@@ -169,8 +188,8 @@ describe('ChangeJobUseCase', () => {
                 location: 'Updated Location',
             };
 
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(jobOwnedByOther);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.getById as Mock).mockResolvedValue(jobOwnedByOther);
             vi.spyOn(changeJobUseCase['validateOwnership'], 'execute').mockRejectedValue(new UnauthorizedError("Not authorized to access this route"));
 
 

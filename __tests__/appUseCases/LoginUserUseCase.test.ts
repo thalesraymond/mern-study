@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import LoginUserUseCase from '../../src/appUseCases/LoginUserUseCase.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
 import IPasswordManager from '../../src/domain/services/IPasswordManager.js';
@@ -18,6 +18,7 @@ const mockUserRepository: IUserRepository = {
     getById: vi.fn(),
     listAll: vi.fn(),
     count: vi.fn(),
+    updateProfileImage: vi.fn(),
 };
 
 const mockPasswordManager: IPasswordManager = {
@@ -27,7 +28,6 @@ const mockPasswordManager: IPasswordManager = {
 
 const mockTokenManager: ITokenManager = {
     generateToken: vi.fn(),
-    verifyToken: vi.fn(),
 };
 
 describe('LoginUserUseCase', () => {
@@ -41,6 +41,8 @@ describe('LoginUserUseCase', () => {
         password: UserPassword.createFromHashed('hashedPassword'),
         role: UserRole.USER,
         location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     beforeEach(() => {
@@ -53,9 +55,9 @@ describe('LoginUserUseCase', () => {
             const request = { email: 'test@example.com', password: 'password123' };
             const token = 'jwt-token';
 
-            (mockUserRepository.findByEmail as vi.Mock).mockResolvedValue(user);
-            (mockPasswordManager.compare as vi.Mock).mockResolvedValue(true);
-            (mockTokenManager.generateToken as vi.Mock).mockReturnValue(token);
+            (mockUserRepository.findByEmail as Mock).mockResolvedValue(user);
+            (mockPasswordManager.compare as Mock).mockResolvedValue(true);
+            (mockTokenManager.generateToken as Mock).mockReturnValue(token);
 
             const result = await loginUserUseCase.execute(request);
 
@@ -69,7 +71,7 @@ describe('LoginUserUseCase', () => {
         it('should throw UnauthorizedError if user is not found', async () => {
             const request = { email: 'wrong@example.com', password: 'password123' };
 
-            (mockUserRepository.findByEmail as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.findByEmail as Mock).mockResolvedValue(null);
 
             await expect(loginUserUseCase.execute(request)).rejects.toThrow(UnauthorizedError);
             expect(mockPasswordManager.compare).not.toHaveBeenCalled();
@@ -79,8 +81,8 @@ describe('LoginUserUseCase', () => {
         it('should throw UnauthorizedError if password does not match', async () => {
             const request = { email: 'test@example.com', password: 'wrongpassword' };
 
-            (mockUserRepository.findByEmail as vi.Mock).mockResolvedValue(user);
-            (mockPasswordManager.compare as vi.Mock).mockResolvedValue(false);
+            (mockUserRepository.findByEmail as Mock).mockResolvedValue(user);
+            (mockPasswordManager.compare as Mock).mockResolvedValue(false);
 
             await expect(loginUserUseCase.execute(request)).rejects.toThrow(UnauthorizedError);
             expect(mockTokenManager.generateToken).not.toHaveBeenCalled();

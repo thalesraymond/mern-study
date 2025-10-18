@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import RetrieveJobsUseCase from '../../src/appUseCases/RetrieveJobsUseCase.js';
 import { IJobRepository } from '../../src/domain/repositories/IJobRepository.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
@@ -23,6 +23,7 @@ const mockJobRepository: IJobRepository = {
     listAll: vi.fn(),
     listByOwner: vi.fn(),
     count: vi.fn(),
+    findByIdAndOwner: vi.fn(),
 };
 
 const mockUserRepository: IUserRepository = {
@@ -33,6 +34,7 @@ const mockUserRepository: IUserRepository = {
     listAll: vi.fn(),
     count: vi.fn(),
     findByEmail: vi.fn(),
+    updateProfileImage: vi.fn(),
 };
 
 describe('RetrieveJobsUseCase', () => {
@@ -51,10 +53,32 @@ describe('RetrieveJobsUseCase', () => {
         password: UserPassword.createFromHashed('hashedPassword'),
         role: UserRole.USER,
         location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
-    const adminUser = new User({ ...user, id: new EntityId(adminId), role: UserRole.ADMIN });
-    const otherUser = new User({ ...user, id: new EntityId(otherUserId) });
+    const adminUser = new User({
+        id: new EntityId(adminId),
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        role: UserRole.ADMIN,
+        location: user.location,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    });
+    const otherUser = new User({
+        id: new EntityId(otherUserId),
+        name: user.name,
+        lastName: user.lastName,
+        email: user.email,
+        password: user.password,
+        role: user.role,
+        location: user.location,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    });
 
     const job = new Job({
         id: new EntityId(jobId),
@@ -64,9 +88,21 @@ describe('RetrieveJobsUseCase', () => {
         jobType: JobType.FULL_TIME,
         location: 'Test Location',
         createdBy: user,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
-    const jobByOther = new Job({ ...job, createdBy: otherUser });
+    const jobByOther = new Job({
+        id: job.id,
+        company: job.company,
+        position: job.position,
+        status: job.status,
+        jobType: job.jobType,
+        location: job.location,
+        createdBy: otherUser,
+        createdAt: job.createdAt,
+        updatedAt: job.updatedAt,
+    });
 
     beforeEach(() => {
         vi.clearAllMocks();
@@ -75,8 +111,8 @@ describe('RetrieveJobsUseCase', () => {
 
     describe('execute', () => {
         it('should retrieve a single job by id successfully', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(job);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.getById as Mock).mockResolvedValue(job);
             const mockValidateOwnership = vi.spyOn(retrieveJobsUseCase['ownershipUseCase'], 'execute').mockResolvedValue();
 
 
@@ -89,15 +125,15 @@ describe('RetrieveJobsUseCase', () => {
         });
 
         it('should throw NotFoundError if job not found', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.getById as Mock).mockResolvedValue(null);
 
             await expect(retrieveJobsUseCase.execute({ userId, jobId: '60d5ec49e0d3f4a3c8d3e8b5' })).rejects.toThrow(NotFoundError);
         });
 
         it('should throw UnauthorizedError when user tries to retrieve a job they do not own', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(jobByOther);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.getById as Mock).mockResolvedValue(jobByOther);
             vi.spyOn(retrieveJobsUseCase['ownershipUseCase'], 'execute').mockRejectedValue(new UnauthorizedError("Not authorized to access this route"));
 
 
@@ -105,8 +141,8 @@ describe('RetrieveJobsUseCase', () => {
         });
 
         it('should retrieve all jobs for a specific user', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-            (mockJobRepository.listByOwner as vi.Mock).mockResolvedValue([job]);
+            (mockUserRepository.getById as Mock).mockResolvedValue(user);
+            (mockJobRepository.listByOwner as Mock).mockResolvedValue([job]);
 
             const result = await retrieveJobsUseCase.execute({ userId });
 
@@ -115,8 +151,8 @@ describe('RetrieveJobsUseCase', () => {
         });
 
         it('should retrieve all jobs for an admin user', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(adminUser);
-            (mockJobRepository.listAll as vi.Mock).mockResolvedValue([job, jobByOther]);
+            (mockUserRepository.getById as Mock).mockResolvedValue(adminUser);
+            (mockJobRepository.listAll as Mock).mockResolvedValue([job, jobByOther]);
 
             const result = await retrieveJobsUseCase.execute({ userId: adminId });
 
@@ -125,7 +161,7 @@ describe('RetrieveJobsUseCase', () => {
         });
 
         it('should throw NotFoundError if user not found', async () => {
-            (mockUserRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockUserRepository.getById as Mock).mockResolvedValue(null);
 
             await expect(retrieveJobsUseCase.execute({ userId: '60d5ec49e0d3f4a3c8d3e8b6' })).rejects.toThrow(NotFoundError);
         });

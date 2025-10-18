@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import DeleteJobUseCase, { DeleteJobRequest } from '../../src/appUseCases/DeleteJobUseCase.js';
 import { IJobRepository } from '../../src/domain/repositories/IJobRepository.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
@@ -18,6 +18,8 @@ const mockJobRepository: IJobRepository = {
     getById: vi.fn(),
     listAll: vi.fn(),
     count: vi.fn(),
+    findByIdAndOwner: vi.fn(),
+    listByOwner: vi.fn(),
 };
 
 const mockUserRepository: IUserRepository = {
@@ -28,6 +30,7 @@ const mockUserRepository: IUserRepository = {
     listAll: vi.fn(),
     count: vi.fn(),
     findByEmail: vi.fn(),
+    updateProfileImage: vi.fn(),
 };
 
 describe('DeleteJobUseCase', () => {
@@ -46,6 +49,8 @@ describe('DeleteJobUseCase', () => {
         password: UserPassword.createFromHashed('hashedPassword'),
         role: UserRole.USER,
         location: 'Test Location',
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     const job = new Job({
@@ -56,6 +61,8 @@ describe('DeleteJobUseCase', () => {
         jobType: JobType.FULL_TIME,
         location: 'Test Location',
         createdBy: user,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     beforeEach(() => {
@@ -73,8 +80,8 @@ describe('DeleteJobUseCase', () => {
         it('should delete a job successfully', async () => {
             const request: DeleteJobRequest = { userId, jobId };
 
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(job);
-            (mockJobRepository.delete as vi.Mock).mockResolvedValue(undefined);
+            (mockJobRepository.getById as Mock).mockResolvedValue(job);
+            (mockJobRepository.delete as Mock).mockResolvedValue(undefined);
 
             await deleteJobUseCase.execute(request);
 
@@ -86,7 +93,7 @@ describe('DeleteJobUseCase', () => {
         it('should throw NotFoundError if job is not found', async () => {
             const request: DeleteJobRequest = { userId, jobId: '60d5ec49e0d3f4a3c8d3e8b4' };
 
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(null);
+            (mockJobRepository.getById as Mock).mockResolvedValue(null);
 
             await expect(deleteJobUseCase.execute(request)).rejects.toThrow(NotFoundError);
         });
@@ -94,7 +101,7 @@ describe('DeleteJobUseCase', () => {
         it('should throw UnauthenticatedError if user does not own the job', async () => {
             const request: DeleteJobRequest = { userId: otherUserId, jobId };
 
-            (mockJobRepository.getById as vi.Mock).mockResolvedValue(job);
+            (mockJobRepository.getById as Mock).mockResolvedValue(job);
 
             await expect(deleteJobUseCase.execute(request)).rejects.toThrow(UnauthenticatedError);
             expect(deleteJobUseCase['validateOwnership'].execute).toHaveBeenCalledWith(new EntityId(otherUserId), user.id);

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import AzureStorageService from '../../../src/infrastructure/azure/AzureStorageService.js';
 import { BlobServiceClient } from '@azure/storage-blob';
 
@@ -24,7 +24,7 @@ describe('AzureStorageService', () => {
             getContainerClient: vi.fn().mockReturnValue(mockContainerClient),
         };
 
-        (BlobServiceClient.fromConnectionString as vi.Mock).mockReturnValue(mockBlobServiceClient);
+        (BlobServiceClient.fromConnectionString as Mock).mockReturnValue(mockBlobServiceClient);
 
         storageService = new AzureStorageService();
     });

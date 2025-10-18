@@ -26,6 +26,8 @@ describe("JobAdapter", () => {
         password: UserPassword.createFromHashed("hashedPassword"),
         location: "New York",
         role: UserRole.USER,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     const rawJob: HydratedDocument<JobSchema> = {
@@ -48,6 +50,8 @@ describe("JobAdapter", () => {
         jobType: JobType.PART_TIME,
         location: "Menlo Park",
         createdBy: createdByUser,
+        createdAt: new Date(),
+        updatedAt: new Date(),
     });
 
     beforeEach(() => {
@@ -68,7 +72,7 @@ describe("JobAdapter", () => {
                     location: createdByUser.location,
                     role: createdByUser.role,
                 },
-            } as HydratedDocument<JobSchema>;
+            } as unknown as HydratedDocument<JobSchema>;
 
             const job = await adapter.toDomain(rawJobWithPopulatedUser);
 
@@ -81,7 +85,7 @@ describe("JobAdapter", () => {
             const rawJobWithUnpopulatedUser = {
                 ...rawJob,
                 populated: vi.fn().mockReturnValue(false),
-            } as HydratedDocument<JobSchema>;
+            } as unknown as HydratedDocument<JobSchema>;
 
             UserModel.findById = vi.fn().mockResolvedValue({
                 _id: new mongoose.Types.ObjectId(createdByUser.id.toString()),
@@ -104,7 +108,7 @@ describe("JobAdapter", () => {
             const rawJobWithUnpopulatedUser = {
                 ...rawJob,
                 populated: vi.fn().mockReturnValue(false),
-            } as HydratedDocument<JobSchema>;
+            } as unknown as HydratedDocument<JobSchema>;
             UserModel.findById = vi.fn().mockResolvedValue(null);
 
             await expect(adapter.toDomain(rawJobWithUnpopulatedUser)).rejects.toThrow(NotFoundError);
