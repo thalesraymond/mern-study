@@ -4,7 +4,7 @@ export { default as EditJob } from "./EditJob";
 export { default as Error } from "./Error";
 export { default as Landing } from "./Landing";
 export { default as Login } from "./login/Login";
-export { default as Profile } from "./Profile";
+export { default as Profile } from "./userProfile/Profile";
 export { default as Register } from "./register/Register";
 export { default as Stats } from "./Stats";
 export { default as Admin } from "./admin/Admin";
