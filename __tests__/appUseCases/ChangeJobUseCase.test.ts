@@ -21,6 +21,7 @@ const mockJobRepository: IJobRepository = {
     count: vi.fn(),
     findByIdAndOwner: vi.fn(),
     listByOwner: vi.fn(),
+    getStats: vi.fn(),
 };
 
 const mockUserRepository: IUserRepository = {
