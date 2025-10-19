@@ -155,7 +155,7 @@ describe("UserController", () => {
     });
 
     describe("updateUser", () => {
-        it("should return a 204 status code on successful update", async () => {
+        it("should return a 204 status code on successful update without a file", async () => {
             const user = new User({
                 id: new EntityId(VALID_MONGO_ID),
                 name: "Test",
