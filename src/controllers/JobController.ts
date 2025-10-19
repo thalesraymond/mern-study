@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { JobPayload, JobParams } from "../requests/JobRequest.js";
+import { JobPayload, JobParams, SearchJobsPayload } from "../requests/JobRequest.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
@@ -31,7 +31,7 @@ export default class JobController {
         };
     }
 
-    public getAllJobs = async (req: Request, res: Response<{ jobs: JobPayload[] }>) => {
+    public getAllJobs = async (req: Request, res: Response<SearchJobsPayload>) => {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
@@ -40,14 +40,14 @@ export default class JobController {
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
 
-        const searchResult = await useCase.execute({
+        const searchResult = (await useCase.execute({
             userId: req.user.userId,
             search: search as string,
             jobStatus: jobStatus as string,
             jobType: jobType as string,
             sort: sort as string,
             page: Number(page),
-        }) as {
+        })) as {
             jobs: Job[];
             totalJobs: number;
             page: number;
@@ -56,7 +56,14 @@ export default class JobController {
 
         const jobPayloads = searchResult.jobs.map((job) => this.toJobPayload(job));
 
-        return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
+        return res
+            .status(StatusCodes.OK)
+            .json({
+                jobs: jobPayloads,
+                totalJobs: searchResult.totalJobs,
+                page: searchResult.page,
+                totalPages: searchResult.totalPages,
+            });
     };
 
     public createJob = async (req: Request<{}, {}, JobPayload>, res: Response<{ job: JobPayload }>) => {
