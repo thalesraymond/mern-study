@@ -1,6 +1,7 @@
 import { ChartsContainer, StatsContainer } from "../../components";
 import { useLoaderData } from "react-router-dom";
 
+
 const Stats = () => {
     const { defaultStats, monthlyApplications } = useLoaderData();
     return (
