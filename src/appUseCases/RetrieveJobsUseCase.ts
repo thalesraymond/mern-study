@@ -67,17 +67,16 @@ export default class RetrieveJobsUseCase {
             return job;
         }
 
-        const searchResult = await this.jobRepository.listByOwner(
-            user.role === UserRole.ADMIN ? undefined : userEntityId,
-            {
-                search,
-                jobStatus,
-                jobType,
-                sort,
-                skip: (page - 1) * pageSize,
-                limit: pageSize,
-            }
-        );
+        const ownerOrAdmin = user.role === UserRole.ADMIN ? undefined : userEntityId;
+
+        const searchResult = await this.jobRepository.listByOwner(ownerOrAdmin, {
+            search,
+            jobStatus,
+            jobType,
+            sort,
+            skip: (page - 1) * pageSize,
+            limit: pageSize,
+        });
 
         return {
             jobs: searchResult.jobs,

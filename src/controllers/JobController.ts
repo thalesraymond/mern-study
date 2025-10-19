@@ -40,18 +40,23 @@ export default class JobController {
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
 
-        const jobs = (await useCase.execute({
+        const searchResult = await useCase.execute({
             userId: req.user.userId,
             search: search as string,
             jobStatus: jobStatus as string,
             jobType: jobType as string,
             sort: sort as string,
             page: Number(page),
-        })) as Job[];
+        }) as {
+            jobs: Job[];
+            totalJobs: number;
+            page: number;
+            totalPages: number;
+        };
 
-        const jobPayloads = jobs ? jobs.map((job) => this.toJobPayload(job)) : [];
+        const jobPayloads = searchResult.jobs.map((job) => this.toJobPayload(job));
 
-        return res.status(StatusCodes.OK).json({ jobs: jobPayloads,  });
+        return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };
 
     public createJob = async (req: Request<{}, {}, JobPayload>, res: Response<{ job: JobPayload }>) => {

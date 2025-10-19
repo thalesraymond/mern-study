@@ -43,7 +43,6 @@ export default class JobRepository extends Repository<Job, JobSchema> implements
     }> {
         const queryObject: any = {};
 
-        console.log(`o ownerid usado na query é ${ownerId}`);
         if (ownerId) {
             queryObject.createdBy = ownerId.toString();
         }
