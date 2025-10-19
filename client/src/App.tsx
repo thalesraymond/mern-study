@@ -1,18 +1,13 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
-import {
-    DashboardLayout,
-    HomeLayout,
-    Landing,
-    Login,
-    Register,
-    Error,
-    AddJob,
-    Stats,
-    AllJobs,
-    Profile,
-    Admin,
-} from "./pages";
+import { DashboardLayout, HomeLayout, Landing, Login, Register, Error, AddJob } from "./pages";
+import { lazy } from "react";
+
+const Stats = lazy(() => import("./pages/jobStats/Stats"));
+const AllJobs = lazy(() => import("./pages/listJobs/AllJobs"));
+const Profile = lazy(() => import("./pages/userProfile/Profile"));
+const Admin = lazy(() => import("./pages/admin/Admin"));
+
 import addJobAction from "./pages/editJobs/AddJobAction";
 import loginAction from "./pages/login/LoginAction";
 import registerAction from "./pages/register/RegisterAction";
