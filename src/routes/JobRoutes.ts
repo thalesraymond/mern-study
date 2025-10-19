@@ -24,6 +24,9 @@ export default (
             jobController.createJob
         );
 
+    jobRoutes.route("/stats").get(authMiddleware.authenticateUser, jobController.showStats);
+
+
     jobRoutes
         .route("/:id")
         .get(

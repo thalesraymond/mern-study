@@ -113,4 +113,31 @@ describe('JobRepository', () => {
             expect(result).toEqual([jobDomain]);
         });
     });
+
+    describe('getStats', () => {
+        it('should return job stats', async () => {
+            const ownerId = new EntityId('60d5ec49e0d3f4a3c8d3e8b2');
+            const statsData = [
+                { _id: 'pending', count: 1 },
+                { _id: 'interview', count: 2 },
+            ];
+            const monthlyApplicationsData = [
+                { _id: { year: 2025, month: 7 }, count: 3 },
+                { _id: { year: 2025, month: 6 }, count: 5 },
+            ];
+
+            mockJobModel.aggregate.mockResolvedValueOnce(statsData);
+            mockJobModel.aggregate.mockResolvedValueOnce(monthlyApplicationsData);
+
+            const result = await jobRepository.getStats(ownerId);
+
+            expect(mockJobModel.aggregate).toHaveBeenCalledTimes(2);
+            expect(result.stats).toEqual({
+                pending: 1,
+                interview: 2,
+                declined: 0,
+            });
+            expect(result.monthlyApplications.length).toBe(2);
+        });
+    });
 });

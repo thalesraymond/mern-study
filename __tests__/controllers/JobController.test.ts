@@ -14,9 +14,12 @@ import UserPassword from "../../src/domain/entities/UserPassword.js";
 import UserRole from "../../src/domain/entities/UserRole.js";
 import { JobParams, JobPayload } from "../../src/requests/JobRequest.js";
 
+import GetJobStatsUseCase from "../../src/appUseCases/GetJobStatsUseCase.js";
+
 vi.mock("../../src/appUseCases/ChangeJobUseCase.js");
 vi.mock("../../src/appUseCases/DeleteJobUseCase.js");
 vi.mock("../../src/appUseCases/RetrieveJobsUseCase.js");
+vi.mock("../../src/appUseCases/GetJobStatsUseCase.js");
 
 const mockJobRepository = {
     create: vi.fn(),
@@ -171,6 +174,20 @@ describe("JobController", () => {
         });
     });
 
+    describe("showStats", () => {
+        it("should return a 200 status code and the stats", async () => {
+            const mockGetJobStatsUseCaseInstance = {
+                execute: vi.fn().mockResolvedValue({ stats: {}, monthlyApplications: [] }),
+            };
+            (GetJobStatsUseCase as Mock).mockImplementation(() => mockGetJobStatsUseCaseInstance);
+
+            await jobController.showStats(req, res as Response);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ defaultStats: {}, monthlyApplications: [] });
+        });
+    });
+
     describe("Unauthenticated access", () => {
         beforeEach(() => {
             req.user = undefined;
@@ -196,6 +213,10 @@ describe("JobController", () => {
             await expect(
                 jobController.updateJob(req as any as Request<JobParams, {}, Partial<JobPayload>>, res as Response)
             ).rejects.toThrow("Authentication Invalid");
+        });
+
+        it("showStats should throw UnauthenticatedError", async () => {
+            await expect(jobController.showStats(req, res as Response)).rejects.toThrow("Authentication Invalid");
         });
 
         it("deleteJob should throw UnauthenticatedError", async () => {

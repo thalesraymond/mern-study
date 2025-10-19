@@ -6,11 +6,9 @@ import User from '../../src/domain/entities/User.js';
 import Job, { JobStatus, JobType } from '../../src/domain/entities/Job.js';
 import { EntityId } from '../../src/domain/entities/EntityId.js';
 import NotFoundError from '../../src/errors/NotFoundError.js';
-import UnauthenticatedError from '../../src/errors/UnauthenticatedError.js';
 import Email from '../../src/domain/entities/Email.js';
 import UserPassword from '../../src/domain/entities/UserPassword.js';
 import UserRole from '../../src/domain/entities/UserRole.js';
-import ValidateOwnershipUseCase from '../../src/appUseCases/ValidateOwnershipUseCase.js';
 import UnauthorizedError from '../../src/errors/UnauthorizedError.js';
 
 vi.mock('../../src/appUseCases/ValidateOwnershipUseCase.js');
@@ -24,6 +22,7 @@ const mockJobRepository: IJobRepository = {
     listByOwner: vi.fn(),
     count: vi.fn(),
     findByIdAndOwner: vi.fn(),
+    getStats: vi.fn(),
 };
 
 const mockUserRepository: IUserRepository = {

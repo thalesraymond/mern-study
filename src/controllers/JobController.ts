@@ -9,6 +9,8 @@ import DeleteJobUseCase from "../appUseCases/DeleteJobUseCase.js";
 import ChangeJobUseCase from "../appUseCases/ChangeJobUseCase.js";
 import RetrieveJobsUseCase from "../appUseCases/RetrieveJobsUseCase.js";
 
+import GetJobStatsUseCase from "../appUseCases/GetJobStatsUseCase.js";
+
 export default class JobController {
     constructor(
         private readonly jobRepository: IJobRepository,
@@ -113,4 +115,15 @@ export default class JobController {
 
         return res.status(StatusCodes.OK).json({ msg: "Job deleted successfully" });
     };
+
+    public showStats = async (req: Request, res: Response) => {
+        if (!req.user) {
+            throw new UnauthenticatedError("Authentication Invalid");
+        }
+
+        const useCase = new GetJobStatsUseCase(this.jobRepository, this.userRepository);
+        const { stats, monthlyApplications } = await useCase.execute(req.user.userId);
+
+        return res.status(StatusCodes.OK).json({ defaultStats: stats, monthlyApplications });
+    }
 }
