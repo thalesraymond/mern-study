@@ -10,7 +10,7 @@ const DashboardContext = createContext({
     isDarkTheme: false,
     toggleDarkTheme: () => {},
     toggleSidebar: () => {},
-    logoutUser: () => {},
+    logoutUser: async () => {},
 });
 
 export default DashboardContext;

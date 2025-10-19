@@ -8,12 +8,13 @@ import { getSavedDarkTheme } from "../../DarkThemeSwitcher";
 import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
 import Loading from "../../components/Loading";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { userQuery } from "./DashboardLoader";
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
     const navigation = useNavigation();
+    const queryClient = useQueryClient();
     const isPageLoading = navigation.state === "loading";
 
     const initialData = useLoaderData();
@@ -47,7 +48,9 @@ const DashboardLayout = () => {
 
         navigate("/");
 
-        apiClient.get("/auth/logout");
+        await apiClient.get("/auth/logout");
+
+        await queryClient.invalidateQueries();
 
         toast.success("User logged out successfully");
     };
@@ -60,7 +63,9 @@ const DashboardLayout = () => {
                 isDarkTheme,
                 toggleDarkTheme,
                 toggleSidebar,
-                logoutUser,
+                logoutUser: async () => {
+                    await logoutUser();
+                },
             }}
         >
             <Wrapper>
