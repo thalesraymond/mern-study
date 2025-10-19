@@ -6,7 +6,7 @@ export { default as Landing } from "./Landing";
 export { default as Login } from "./login/Login";
 export { default as Profile } from "./userProfile/Profile";
 export { default as Register } from "./register/Register";
-export { default as Stats } from "./Stats";
+export { default as Stats } from "./jobStats/Stats";
 export { default as Admin } from "./admin/Admin";
 export { default as DeleteJob } from "./deleteJob/DeleteJob";
 export { default as DashboardLayout } from "./dashboard/DashboardLayout";
