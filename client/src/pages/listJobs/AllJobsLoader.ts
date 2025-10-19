@@ -36,8 +36,16 @@ const allJobsLoader = async ({ request }: ActionFunctionArgs) => {
 
     try {
         const params = Object.fromEntries([...new URL(request.url).searchParams.entries()]);
+
+        // Keeping params explict for future reference
         const { data } = await apiClient.get("/jobs", {
-            params,
+            params: {
+                search: params.search,
+                jobStatus: params.jobStatus,
+                jobType: params.jobType,
+                sort: params.sort,
+                page: params.page,
+            },
         });
 
         return {
