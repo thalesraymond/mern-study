@@ -44,8 +44,8 @@ const allJobsLoader = async ({ request }: ActionFunctionArgs) => {
             jobs: data.jobs,
             searchValues: { ...params },
             totalJobs: data.totalJobs,
-            numOfPages: data.numOfPages,
-            currentPage: data.currentPage,
+            numOfPages: data.totalPages,
+            currentPage: data.page,
         };
     } catch (error) {
         const axiosError = error as AxiosError<{ msg: string }>;

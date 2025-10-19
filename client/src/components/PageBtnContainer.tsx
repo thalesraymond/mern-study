@@ -1,7 +1,7 @@
 import { HiChevronDoubleLeft, HiChevronDoubleRight } from "react-icons/hi";
 import Wrapper from "../assets/wrappers/PageBtnContainer";
-import { useLocation, Link, useNavigate } from "react-router-dom";
-import { useAllJobsContext } from "../pages/AllJobs";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAllJobsContext } from "../pages/listJobs/AllJobsContext";
 
 const PageBtnContainer = () => {
     const { numOfPages, currentPage } = useAllJobsContext();
@@ -44,7 +44,7 @@ const PageBtnContainer = () => {
                 onClick={() => {
                     let nextPage = currentPage + 1;
                     if (nextPage > numOfPages) nextPage = 1;
-                    handlePageChange(nextPage);
+                    handlePageChange(nextPage.toString());
                 }}
             >
                 next

@@ -2,6 +2,7 @@ import Wrapper from "../assets/wrappers/JobsContainer";
 
 import { useAllJobsContext } from "../pages/listJobs/AllJobsContext";
 import Job from "./Job";
+import PageBtnContainer from "./PageBtnContainer";
 
 const JobsContainer = () => {
     const { jobs, totalJobs, numOfPages } = useAllJobsContext();
