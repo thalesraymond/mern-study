@@ -25,12 +25,16 @@ export default class JobRepository extends Repository<Job, JobSchema> implements
         return job ? await this.adapter.toDomain(job) : null;
     }
 
+    async listByOwner(
+        ownerId?: EntityId,
+        options?: { search?: string; jobStatus?: string; jobType?: string; sort?: string }
+    ): Promise<Job[]> {
+        const queryObject: any = {};
 
-
-    async listByOwner(ownerId: EntityId, options?: { search?: string; jobStatus?: string; jobType?: string; sort?: string; }): Promise<Job[]> {
-        const queryObject: any = {
-            createdBy: ownerId.toString(),
-        };
+        console.log(`o ownerid usado na query é ${ownerId}`);
+        if (ownerId) {
+            queryObject.createdBy = ownerId.toString();
+        }
 
         if (options?.search) {
             queryObject.$or = [
@@ -77,11 +81,14 @@ export default class JobRepository extends Repository<Job, JobSchema> implements
             { $group: { _id: "$status", count: { $sum: 1 } } },
         ]);
 
-        const stats = statsArray.reduce((acc, curr) => {
-            const { _id: title, count } = curr;
-            acc[title] = count;
-            return acc;
-        }, {} as Record<JobStatus, number>);
+        const stats = statsArray.reduce(
+            (acc, curr) => {
+                const { _id: title, count } = curr;
+                acc[title] = count;
+                return acc;
+            },
+            {} as Record<JobStatus, number>
+        );
 
         const defaultStats = {
             [JobStatus.PENDING]: stats.pending || 0,

@@ -6,8 +6,6 @@ import ValidateOwnershipUseCase from "./ValidateOwnershipUseCase.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import UserRole from "../domain/entities/UserRole.js";
 
-import { SortOptions } from "./types.js";
-
 interface RetrieveJobsUseCasePayload {
     jobId?: string;
     userId: string;
@@ -26,7 +24,14 @@ export default class RetrieveJobsUseCase {
         this.ownershipUseCase = new ValidateOwnershipUseCase(this.userRepository);
     }
 
-    public async execute({ jobId, userId, search, jobStatus, jobType, sort }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
+    public async execute({
+        jobId,
+        userId,
+        search,
+        jobStatus,
+        jobType,
+        sort,
+    }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
         const userEntityId = new EntityId(userId);
         const user = await this.userRepository.getById(userEntityId);
 
@@ -47,7 +52,8 @@ export default class RetrieveJobsUseCase {
             return job;
         }
 
-        return await this.jobRepository.listByOwner(userEntityId, {
+        console.log(`user role is ${user.role}`);
+        return await this.jobRepository.listByOwner(user.role === UserRole.ADMIN ? undefined : userEntityId, {
             search,
             jobStatus,
             jobType,

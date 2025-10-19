@@ -3,7 +3,9 @@ const FormRow = (options: {
     name: string;
     labelText?: string;
     defaultValue?: string;
+    required?: boolean;
 }) => {
+    const isRequired = options.required ?? true;
     return (
         <div className="form-row">
             <label htmlFor={options.name} className="form-label">
@@ -15,7 +17,7 @@ const FormRow = (options: {
                 id={options.name}
                 name={options.name}
                 defaultValue={options.defaultValue || ""}
-                required
+                required={isRequired}
             />
         </div>
     );
