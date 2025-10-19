@@ -3,7 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import * as dotenv from "dotenv";
 import { StatusCodes } from "http-status-codes";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 // routes
 import jobRoutes from "./routes/JobRoutes.js";
