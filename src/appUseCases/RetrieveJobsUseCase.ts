@@ -49,10 +49,10 @@ export default class RetrieveJobsUseCase {
         page,
     }: RetrieveJobsUseCasePayload): Promise<Job | GetAllJobsResponse> {
         if (jobId) {
-            return this.getSingleJobUseCase.execute({ jobId, userId });
+            return await this.getSingleJobUseCase.execute({ jobId, userId });
         }
 
-        return this.searchJobsUseCase.execute({
+        return await this.searchJobsUseCase.execute({
             userId,
             search,
             jobStatus,
