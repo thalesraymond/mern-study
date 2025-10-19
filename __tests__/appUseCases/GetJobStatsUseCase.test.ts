@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import GetJobStatsUseCase from '../../src/appUseCases/GetJobStatsUseCase.js';
 import { IUserRepository } from '../../src/domain/repositories/IUserRepository.js';
 import { IJobRepository } from '../../src/domain/repositories/IJobRepository.js';
@@ -39,11 +39,14 @@ describe('GetJobStatsUseCase', () => {
 
     beforeEach(() => {
         mockUserRepository = {
-            getByEmail: vi.fn(),
+            findByEmail: vi.fn(),
             getById: vi.fn(),
             create: vi.fn(),
             update: vi.fn(),
             delete: vi.fn(),
+            listAll: vi.fn(),
+            count: vi.fn(),
+            updateProfileImage: vi.fn(),
         };
 
         mockJobRepository = {
@@ -53,6 +56,9 @@ describe('GetJobStatsUseCase', () => {
             update: vi.fn(),
             delete: vi.fn(),
             getStats: vi.fn(),
+            count: vi.fn(),
+            findByIdAndOwner: vi.fn(),
+            listAll: vi.fn(),
         };
 
         getJobStatsUseCase = new GetJobStatsUseCase(
@@ -62,8 +68,8 @@ describe('GetJobStatsUseCase', () => {
     });
 
     it('should retrieve job stats for a valid user', async () => {
-        (mockUserRepository.getById as vi.Mock).mockResolvedValue(user);
-        (mockJobRepository.getStats as vi.Mock).mockResolvedValue(stats);
+        (mockUserRepository.getById as Mock).mockResolvedValue(user);
+        (mockJobRepository.getStats as Mock).mockResolvedValue(stats);
 
         const result = await getJobStatsUseCase.execute(userId);
 
@@ -75,7 +81,7 @@ describe('GetJobStatsUseCase', () => {
     });
 
     it('should throw NotFoundError if the user does not exist', async () => {
-        (mockUserRepository.getById as vi.Mock).mockResolvedValue(null);
+        (mockUserRepository.getById as Mock).mockResolvedValue(null);
 
         await expect(getJobStatsUseCase.execute(userId)).rejects.toThrow(
             NotFoundError
