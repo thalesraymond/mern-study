@@ -10,6 +10,13 @@ export interface JobPayload {
     createdBy: string;
 }
 
+export interface SearchJobsPayload {
+    jobs: JobPayload[];
+    totalJobs: number;
+    page: number;
+    totalPages: number;
+}
+
 export interface JobParams {
     id: string;
 }

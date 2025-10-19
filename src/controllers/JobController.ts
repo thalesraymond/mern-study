@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
-import { JobPayload, JobParams } from "../requests/JobRequest.js";
+import { JobPayload, JobParams, SearchJobsPayload } from "../requests/JobRequest.js";
 import UnauthenticatedError from "../errors/UnauthenticatedError.js";
 import { IJobRepository } from "../domain/repositories/IJobRepository.js";
 import { IUserRepository } from "../domain/repositories/IUserRepository.js";
@@ -31,23 +31,39 @@ export default class JobController {
         };
     }
 
-    public getAllJobs = async (req: Request, res: Response<{ jobs: JobPayload[] }>) => {
+    public getAllJobs = async (req: Request, res: Response<SearchJobsPayload>) => {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
 
-        const { search, jobStatus, jobType, sort } = req.query;
+        const { search, jobStatus, jobType, sort, page } = req.query;
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
-        const jobs = await useCase.execute({
+
+        const searchResult = (await useCase.execute({
             userId: req.user.userId,
             search: search as string,
             jobStatus: jobStatus as string,
             jobType: jobType as string,
             sort: sort as string,
-        }) as Job[];
-        const jobPayloads = jobs ? jobs.map((job) => this.toJobPayload(job)) : [];
-        return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
+            page: Number(page),
+        })) as {
+            jobs: Job[];
+            totalJobs: number;
+            page: number;
+            totalPages: number;
+        };
+
+        const jobPayloads = searchResult.jobs.map((job) => this.toJobPayload(job));
+
+        return res
+            .status(StatusCodes.OK)
+            .json({
+                jobs: jobPayloads,
+                totalJobs: searchResult.totalJobs,
+                page: searchResult.page,
+                totalPages: searchResult.totalPages,
+            });
     };
 
     public createJob = async (req: Request<{}, {}, JobPayload>, res: Response<{ job: JobPayload }>) => {
@@ -77,7 +93,7 @@ export default class JobController {
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
 
-        const job = await useCase.execute({ userId: req.user.userId, jobId: id }) as Job;
+        const job = (await useCase.execute({ userId: req.user.userId, jobId: id })) as Job;
 
         return res.status(StatusCodes.OK).json({
             job: this.toJobPayload(job),
@@ -111,10 +127,7 @@ export default class JobController {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
-        const useCase = new DeleteJobUseCase(
-            this.jobRepository,
-            this.userRepository
-        );
+        const useCase = new DeleteJobUseCase(this.jobRepository, this.userRepository);
 
         await useCase.execute({
             jobId: req.params.id,
@@ -133,5 +146,5 @@ export default class JobController {
         const { stats, monthlyApplications } = await useCase.execute(req.user.userId);
 
         return res.status(StatusCodes.OK).json({ defaultStats: stats, monthlyApplications });
-    }
+    };
 }

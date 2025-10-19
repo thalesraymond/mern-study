@@ -102,19 +102,28 @@ describe('JobRepository', () => {
     });
 
     describe('listByOwner with options', () => {
+        let mockQuery: any;
+
+        beforeEach(() => {
+            mockQuery = {
+                skip: vi.fn().mockReturnThis(),
+                limit: vi.fn().mockReturnThis(),
+                sort: vi.fn().mockResolvedValue([jobPersistence]),
+            };
+            mockJobModel.find.mockReturnValue(mockQuery);
+            mockJobModel.countDocuments.mockResolvedValue(1);
+        });
+
         it('should handle search, jobStatus, jobType, and sort options', async () => {
             const ownerId = new EntityId('60d5ec49e0d3f4a3c8d3e8b2');
             const options = {
                 search: 'Test',
                 jobStatus: 'pending',
                 jobType: 'full-time',
-                sort: 'newest'
+                sort: 'newest',
+                skip: 0,
+                limit: 10
             };
-
-            const mockQuery = {
-                sort: vi.fn().mockResolvedValue([jobPersistence])
-            };
-            mockJobModel.find.mockReturnValue(mockQuery);
 
             const result = await jobRepository.listByOwner(ownerId, options);
 
@@ -127,8 +136,15 @@ describe('JobRepository', () => {
                 status: options.jobStatus,
                 jobType: options.jobType
             });
+            expect(mockQuery.skip).toHaveBeenCalledWith(options.skip);
+            expect(mockQuery.limit).toHaveBeenCalledWith(options.limit);
             expect(mockQuery.sort).toHaveBeenCalledWith({ createdAt: -1 });
-            expect(result).toEqual([jobDomain]);
+            expect(result).toEqual({
+                jobs: [jobDomain],
+                totalJobs: 1,
+                page: 1,
+                totalPages: 1,
+            });
         });
 
         it('should handle listing jobs without an owner', async () => {
@@ -136,13 +152,10 @@ describe('JobRepository', () => {
                 search: 'Test',
                 jobStatus: 'all',
                 jobType: 'all',
-                sort: 'oldest'
+                sort: 'oldest',
+                skip: 0,
+                limit: 10
             };
-
-            const mockQuery = {
-                sort: vi.fn().mockResolvedValue([jobPersistence])
-            };
-            mockJobModel.find.mockReturnValue(mockQuery);
 
             const result = await jobRepository.listByOwner(undefined, options);
 
@@ -152,18 +165,20 @@ describe('JobRepository', () => {
                     { company: { $regex: options.search, $options: "i" } },
                 ],
             });
+            expect(mockQuery.skip).toHaveBeenCalledWith(options.skip);
+            expect(mockQuery.limit).toHaveBeenCalledWith(options.limit);
             expect(mockQuery.sort).toHaveBeenCalledWith({ createdAt: 1 });
-            expect(result).toEqual([jobDomain]);
+            expect(result).toEqual({
+                jobs: [jobDomain],
+                totalJobs: 1,
+                page: 1,
+                totalPages: 1,
+            });
         });
 
         it('should use default sort when no sort option is provided', async () => {
             const ownerId = new EntityId('60d5ec49e0d3f4a3c8d3e8b2');
-            const options = {};
-
-            const mockQuery = {
-                sort: vi.fn().mockResolvedValue([jobPersistence])
-            };
-            mockJobModel.find.mockReturnValue(mockQuery);
+            const options = { skip: 0, limit: 10 };
 
             await jobRepository.listByOwner(ownerId, options);
 
@@ -177,11 +192,6 @@ describe('JobRepository', () => {
                 jobType: 'all',
             };
 
-            const mockQuery = {
-                sort: vi.fn().mockResolvedValue([jobPersistence])
-            };
-            mockJobModel.find.mockReturnValue(mockQuery);
-
             await jobRepository.listByOwner(ownerId, options);
 
             expect(mockJobModel.find).toHaveBeenCalledWith({
@@ -193,11 +203,6 @@ describe('JobRepository', () => {
             const ownerId = new EntityId('60d5ec49e0d3f4a3c8d3e8b2');
             const optionsAZ = { sort: 'a-z' };
             const optionsZA = { sort: 'z-a' };
-
-            const mockQuery = {
-                sort: vi.fn().mockResolvedValue([jobPersistence])
-            };
-            mockJobModel.find.mockReturnValue(mockQuery);
 
             await jobRepository.listByOwner(ownerId, optionsAZ);
             expect(mockQuery.sort).toHaveBeenCalledWith({ position: 1 });

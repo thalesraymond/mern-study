@@ -141,22 +141,31 @@ describe('RetrieveJobsUseCase', () => {
 
         it('should retrieve all jobs for a specific user with filter and sort', async () => {
             (mockUserRepository.getById as Mock).mockResolvedValue(user);
-            (mockJobRepository.listByOwner as Mock).mockResolvedValue([job]);
+            const paginatedResult = {
+                jobs: [job],
+                totalJobs: 1,
+                page: 1,
+                totalPages: 1,
+            };
+            (mockJobRepository.listByOwner as Mock).mockResolvedValue(paginatedResult);
 
             const result = await retrieveJobsUseCase.execute({ 
                 userId, 
                 search: 'Test', 
                 jobStatus: 'pending', 
                 jobType: 'full-time', 
-                sort: 'newest' 
+                sort: 'newest',
+                page: 1
             });
 
-            expect(result).toEqual([job]);
+            expect(result).toEqual(paginatedResult);
             expect(mockJobRepository.listByOwner).toHaveBeenCalledWith(new EntityId(userId), {
                 search: 'Test',
                 jobStatus: 'pending',
                 jobType: 'full-time',
-                sort: 'newest'
+                sort: 'newest',
+                skip: 0,
+                limit: 10
             });
         });
 

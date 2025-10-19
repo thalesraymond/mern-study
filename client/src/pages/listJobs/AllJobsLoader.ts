@@ -36,16 +36,24 @@ const allJobsLoader = async ({ request }: ActionFunctionArgs) => {
 
     try {
         const params = Object.fromEntries([...new URL(request.url).searchParams.entries()]);
+
+        // Keeping params explict for future reference
         const { data } = await apiClient.get("/jobs", {
-            params,
+            params: {
+                search: params.search,
+                jobStatus: params.jobStatus,
+                jobType: params.jobType,
+                sort: params.sort,
+                page: params.page,
+            },
         });
 
         return {
             jobs: data.jobs,
             searchValues: { ...params },
             totalJobs: data.totalJobs,
-            numOfPages: data.numOfPages,
-            currentPage: data.currentPage,
+            numOfPages: data.totalPages,
+            currentPage: data.page,
         };
     } catch (error) {
         const axiosError = error as AxiosError<{ msg: string }>;

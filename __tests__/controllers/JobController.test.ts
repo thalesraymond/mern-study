@@ -117,14 +117,24 @@ describe("JobController", () => {
     describe("getAllJobs", () => {
         it("should return a 200 status code and a list of jobs", async () => {
             const mockRetrieveJobsUseCaseInstance = {
-                execute: vi.fn().mockResolvedValue([jobEntity]),
+                execute: vi.fn().mockResolvedValue({ 
+                    jobs: [jobEntity], 
+                    totalJobs: 1, 
+                    page: 1, 
+                    totalPages: 1 
+                }),
             };
             (RetrieveJobsUseCase as Mock).mockImplementation(() => mockRetrieveJobsUseCaseInstance);
 
             await jobController.getAllJobs(req, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ jobs: expect.any(Array) });
+            expect(res.json).toHaveBeenCalledWith({ 
+                jobs: expect.any(Array), 
+                totalJobs: 1, 
+                page: 1, 
+                totalPages: 1 
+            });
         });
 
         it("should return a 200 status code and a list of jobs with query parameters", async () => {
@@ -133,22 +143,34 @@ describe("JobController", () => {
                 jobStatus: "pending",
                 jobType: "full-time",
                 sort: "newest",
+                page: "1",
             };
             const mockRetrieveJobsUseCaseInstance = {
-                execute: vi.fn().mockResolvedValue([jobEntity]),
+                execute: vi.fn().mockResolvedValue({ 
+                    jobs: [jobEntity], 
+                    totalJobs: 1, 
+                    page: 1, 
+                    totalPages: 1 
+                }),
             };
             (RetrieveJobsUseCase as Mock).mockImplementation(() => mockRetrieveJobsUseCaseInstance);
 
             await jobController.getAllJobs(req, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(200);
-            expect(res.json).toHaveBeenCalledWith({ jobs: expect.any(Array) });
+            expect(res.json).toHaveBeenCalledWith({ 
+                jobs: expect.any(Array), 
+                totalJobs: 1, 
+                page: 1, 
+                totalPages: 1 
+            });
             expect(mockRetrieveJobsUseCaseInstance.execute).toHaveBeenCalledWith({
                 userId: VALID_MONGO_ID_2,
                 search: "engineer",
                 jobStatus: "pending",
                 jobType: "full-time",
                 sort: "newest",
+                page: 1,
             });
         });
     });
