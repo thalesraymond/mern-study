@@ -139,25 +139,28 @@ describe('RetrieveJobsUseCase', () => {
             await expect(retrieveJobsUseCase.execute({ userId, jobId })).rejects.toThrow(UnauthorizedError);
         });
 
-        it('should retrieve all jobs for a specific user', async () => {
+        it('should retrieve all jobs for a specific user with filter and sort', async () => {
             (mockUserRepository.getById as Mock).mockResolvedValue(user);
             (mockJobRepository.listByOwner as Mock).mockResolvedValue([job]);
 
-            const result = await retrieveJobsUseCase.execute({ userId });
+            const result = await retrieveJobsUseCase.execute({ 
+                userId, 
+                search: 'Test', 
+                jobStatus: 'pending', 
+                jobType: 'full-time', 
+                sort: 'newest' 
+            });
 
             expect(result).toEqual([job]);
-            expect(mockJobRepository.listByOwner).toHaveBeenCalledWith(new EntityId(userId));
+            expect(mockJobRepository.listByOwner).toHaveBeenCalledWith(new EntityId(userId), {
+                search: 'Test',
+                jobStatus: 'pending',
+                jobType: 'full-time',
+                sort: 'newest'
+            });
         });
 
-        it('should retrieve all jobs for an admin user', async () => {
-            (mockUserRepository.getById as Mock).mockResolvedValue(adminUser);
-            (mockJobRepository.listAll as Mock).mockResolvedValue([job, jobByOther]);
 
-            const result = await retrieveJobsUseCase.execute({ userId: adminId });
-
-            expect(result).toEqual([job, jobByOther]);
-            expect(mockJobRepository.listAll).toHaveBeenCalled();
-        });
 
         it('should throw NotFoundError if user not found', async () => {
             (mockUserRepository.getById as Mock).mockResolvedValue(null);

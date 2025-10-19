@@ -126,6 +126,31 @@ describe("JobController", () => {
             expect(res.status).toHaveBeenCalledWith(200);
             expect(res.json).toHaveBeenCalledWith({ jobs: expect.any(Array) });
         });
+
+        it("should return a 200 status code and a list of jobs with query parameters", async () => {
+            req.query = {
+                search: "engineer",
+                jobStatus: "pending",
+                jobType: "full-time",
+                sort: "newest",
+            };
+            const mockRetrieveJobsUseCaseInstance = {
+                execute: vi.fn().mockResolvedValue([jobEntity]),
+            };
+            (RetrieveJobsUseCase as Mock).mockImplementation(() => mockRetrieveJobsUseCaseInstance);
+
+            await jobController.getAllJobs(req, res as Response);
+
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ jobs: expect.any(Array) });
+            expect(mockRetrieveJobsUseCaseInstance.execute).toHaveBeenCalledWith({
+                userId: VALID_MONGO_ID_2,
+                search: "engineer",
+                jobStatus: "pending",
+                jobType: "full-time",
+                sort: "newest",
+            });
+        });
     });
 
     describe("updateJob", () => {

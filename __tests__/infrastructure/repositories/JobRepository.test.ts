@@ -101,15 +101,33 @@ describe('JobRepository', () => {
         });
     });
 
-    describe('listByOwner', () => {
-        it('should return a list of jobs for a given owner', async () => {
+    describe('listByOwner with options', () => {
+        it('should handle search, jobStatus, jobType, and sort options', async () => {
             const ownerId = new EntityId('60d5ec49e0d3f4a3c8d3e8b2');
-            mockJobModel.find.mockResolvedValue([jobPersistence]);
+            const options = {
+                search: 'Test',
+                jobStatus: 'pending',
+                jobType: 'full-time',
+                sort: 'newest'
+            };
 
-            const result = await jobRepository.listByOwner(ownerId);
+            const mockQuery = {
+                sort: vi.fn().mockResolvedValue([jobPersistence])
+            };
+            mockJobModel.find.mockReturnValue(mockQuery);
 
-            expect(mockJobModel.find).toHaveBeenCalledWith({ createdBy: ownerId.toString() });
-            expect(mockJobAdapter.toDomain).toHaveBeenCalledWith(jobPersistence);
+            const result = await jobRepository.listByOwner(ownerId, options);
+
+            expect(mockJobModel.find).toHaveBeenCalledWith({
+                createdBy: ownerId.toString(),
+                $or: [
+                    { position: { $regex: options.search, $options: "i" } },
+                    { company: { $regex: options.search, $options: "i" } },
+                ],
+                status: options.jobStatus,
+                jobType: options.jobType
+            });
+            expect(mockQuery.sort).toHaveBeenCalledWith({ createdAt: -1 });
             expect(result).toEqual([jobDomain]);
         });
     });

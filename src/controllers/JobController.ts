@@ -31,13 +31,21 @@ export default class JobController {
         };
     }
 
-    public getAllJobs = async (req: Request<{}, {}, {}>, res: Response<{ jobs: JobPayload[] }>) => {
+    public getAllJobs = async (req: Request, res: Response<{ jobs: JobPayload[] }>) => {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
 
+        const { search, jobStatus, jobType, sort } = req.query;
+
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
-        const jobs = await useCase.execute({ userId: req.user.userId }) as Job[];
+        const jobs = await useCase.execute({
+            userId: req.user.userId,
+            search: search as string,
+            jobStatus: jobStatus as string,
+            jobType: jobType as string,
+            sort: sort as string,
+        }) as Job[];
         const jobPayloads = jobs ? jobs.map((job) => this.toJobPayload(job)) : [];
         return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
     };

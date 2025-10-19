@@ -1,8 +1,9 @@
 import { toast } from "react-toastify";
 import apiClient from "../../utils/ApiClient";
 import type { AxiosError } from "axios";
+import type { ActionFunctionArgs } from "react-router-dom";
 
-const allJobsLoader = async () => {
+const allJobsLoader = async ({ request }: ActionFunctionArgs) => {
     const isExplore = localStorage.getItem("isExplore");
 
     if (isExplore && JSON.parse(isExplore)) {
@@ -34,9 +35,18 @@ const allJobsLoader = async () => {
     }
 
     try {
-        const { data } = await apiClient.get("/jobs");
+        const params = Object.fromEntries([...new URL(request.url).searchParams.entries()]);
+        const { data } = await apiClient.get("/jobs", {
+            params,
+        });
 
-        return data;
+        return {
+            jobs: data.jobs,
+            searchValues: { ...params },
+            totalJobs: data.totalJobs,
+            numOfPages: data.numOfPages,
+            currentPage: data.currentPage,
+        };
     } catch (error) {
         const axiosError = error as AxiosError<{ msg: string }>;
 

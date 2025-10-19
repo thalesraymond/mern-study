@@ -9,6 +9,10 @@ import UserRole from "../domain/entities/UserRole.js";
 interface RetrieveJobsUseCasePayload {
     jobId?: string;
     userId: string;
+    search?: string;
+    jobStatus?: string;
+    jobType?: string;
+    sort?: string;
 }
 
 export default class RetrieveJobsUseCase {
@@ -20,7 +24,14 @@ export default class RetrieveJobsUseCase {
         this.ownershipUseCase = new ValidateOwnershipUseCase(this.userRepository);
     }
 
-    public async execute({ jobId, userId }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
+    public async execute({
+        jobId,
+        userId,
+        search,
+        jobStatus,
+        jobType,
+        sort,
+    }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
         const userEntityId = new EntityId(userId);
         const user = await this.userRepository.getById(userEntityId);
 
@@ -41,10 +52,12 @@ export default class RetrieveJobsUseCase {
             return job;
         }
 
-        if (user.role === UserRole.ADMIN) {
-            return await this.jobRepository.listAll();
-        }
-
-        return await this.jobRepository.listByOwner(userEntityId);
+        console.log(`user role is ${user.role}`);
+        return await this.jobRepository.listByOwner(user.role === UserRole.ADMIN ? undefined : userEntityId, {
+            search,
+            jobStatus,
+            jobType,
+            sort,
+        });
     }
 }
