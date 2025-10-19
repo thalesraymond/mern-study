@@ -19,16 +19,30 @@ import UserRepository from "./infrastructure/repositories/UserRepository.js";
 import JobRepository from "./infrastructure/repositories/JobRepository.js";
 import AzureStorageService from "./infrastructure/azure/AzureStorageService.js";
 import { fileURLToPath } from "url";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 
 const app = express();
+app.use((req, res, next) => {
+    Object.defineProperty(req, "query", {
+        ...Object.getOwnPropertyDescriptor(req, "query"),
+        value: req.query,
+        writable: true,
+    });
+    next();
+});
 
-dotenv.config();
+app.use(mongoSanitize());
+
+app.use(express.json());
 
 if (process.env.NODE_ENV === "development") {
     app.use(morgan("dev"));
 }
 
-app.use(express.json());
+app.use(helmet());
+
+dotenv.config();
 
 app.use(cookieParser());
 
