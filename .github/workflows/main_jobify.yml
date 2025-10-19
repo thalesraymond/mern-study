@@ -66,3 +66,5 @@ jobs:
                   app-name: "jobify"
                   slot-name: "Production"
                   package: .
+                  clean: true
+
