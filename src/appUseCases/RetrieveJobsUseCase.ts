@@ -13,6 +13,14 @@ interface RetrieveJobsUseCasePayload {
     jobStatus?: string;
     jobType?: string;
     sort?: string;
+    page?: number;
+}
+
+interface GetAllJobsResponse {
+    jobs: Job[];
+    totalJobs: number;
+    page: number;
+    totalPages: number;
 }
 
 export default class RetrieveJobsUseCase {
@@ -31,7 +39,14 @@ export default class RetrieveJobsUseCase {
         jobStatus,
         jobType,
         sort,
-    }: RetrieveJobsUseCasePayload): Promise<Job | Job[]> {
+        page,
+    }: RetrieveJobsUseCasePayload): Promise<Job | GetAllJobsResponse> {
+        if (!page) {
+            page = 1;
+        }
+
+        const pageSize = 10;
+
         const userEntityId = new EntityId(userId);
         const user = await this.userRepository.getById(userEntityId);
 
@@ -52,12 +67,23 @@ export default class RetrieveJobsUseCase {
             return job;
         }
 
-        console.log(`user role is ${user.role}`);
-        return await this.jobRepository.listByOwner(user.role === UserRole.ADMIN ? undefined : userEntityId, {
-            search,
-            jobStatus,
-            jobType,
-            sort,
-        });
+        const searchResult = await this.jobRepository.listByOwner(
+            user.role === UserRole.ADMIN ? undefined : userEntityId,
+            {
+                search,
+                jobStatus,
+                jobType,
+                sort,
+                skip: (page - 1) * pageSize,
+                limit: pageSize,
+            }
+        );
+
+        return {
+            jobs: searchResult.jobs,
+            totalJobs: searchResult.totalJobs,
+            page: searchResult.page,
+            totalPages: searchResult.totalPages,
+        };
     }
 }

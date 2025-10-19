@@ -15,3 +15,4 @@ export { default as ChartsContainer } from "./ChartsContainer";
 export { default as Loading } from "./Loading";
 export { default as StatsContainer } from "./StatsContainer";
 export { default as Job } from "./Job";
+export { default as PageBtnContainer} from "./PageBtnContainer"

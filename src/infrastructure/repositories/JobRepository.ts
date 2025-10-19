@@ -27,8 +27,20 @@ export default class JobRepository extends Repository<Job, JobSchema> implements
 
     async listByOwner(
         ownerId?: EntityId,
-        options?: { search?: string; jobStatus?: string; jobType?: string; sort?: string }
-    ): Promise<Job[]> {
+        options?: {
+            search?: string;
+            jobStatus?: string;
+            jobType?: string;
+            sort?: string;
+            skip?: number;
+            limit?: number;
+        }
+    ): Promise<{
+        jobs: Job[];
+        totalJobs: number;
+        page: number;
+        totalPages: number;
+    }> {
         const queryObject: any = {};
 
         console.log(`o ownerid usado na query é ${ownerId}`);
@@ -70,9 +82,22 @@ export default class JobRepository extends Repository<Job, JobSchema> implements
                 break;
         }
 
-        const jobs = await this.model.find(queryObject).sort(sortOptions);
+        const totalJobs = await this.model.countDocuments(queryObject);
 
-        return Promise.all(jobs.map((job) => this.adapter.toDomain(job)));
+        const jobs = await this.model
+            .find(queryObject)
+            .skip(options?.skip ?? 0)
+            .limit(options?.limit ?? 10)
+            .sort(sortOptions);
+
+        //return Promise.all(jobs.map((job) => this.adapter.toDomain(job)));
+
+        return {
+            jobs: await Promise.all(jobs.map((job) => this.adapter.toDomain(job))),
+            totalJobs,
+            page: (options?.skip ?? 0) / (options?.limit ?? 10) + 1,
+            totalPages: Math.ceil(totalJobs / (options?.limit ?? 10)),
+        };
     }
 
     async getStats(ownerId: EntityId): Promise<StatsDto> {

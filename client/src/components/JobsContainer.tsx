@@ -4,7 +4,8 @@ import { useAllJobsContext } from "../pages/listJobs/AllJobsContext";
 import Job from "./Job";
 
 const JobsContainer = () => {
-    const { jobs } = useAllJobsContext();
+    const { jobs, totalJobs, numOfPages } = useAllJobsContext();
+
     if (jobs.length === 0) {
         return (
             <Wrapper>
@@ -15,11 +16,15 @@ const JobsContainer = () => {
 
     return (
         <Wrapper>
+            <h5>
+                {totalJobs} job{jobs.length > 1 && "s"} found
+            </h5>
             <div className="jobs">
                 {jobs.map((job) => {
                     return <Job key={job.id} {...job} />;
                 })}
             </div>
+            {numOfPages > 1 && <PageBtnContainer />}
         </Wrapper>
     );
 };

@@ -36,18 +36,22 @@ export default class JobController {
             throw new UnauthenticatedError("Authentication Invalid");
         }
 
-        const { search, jobStatus, jobType, sort } = req.query;
+        const { search, jobStatus, jobType, sort, page } = req.query;
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
-        const jobs = await useCase.execute({
+
+        const jobs = (await useCase.execute({
             userId: req.user.userId,
             search: search as string,
             jobStatus: jobStatus as string,
             jobType: jobType as string,
             sort: sort as string,
-        }) as Job[];
+            page: Number(page),
+        })) as Job[];
+
         const jobPayloads = jobs ? jobs.map((job) => this.toJobPayload(job)) : [];
-        return res.status(StatusCodes.OK).json({ jobs: jobPayloads });
+
+        return res.status(StatusCodes.OK).json({ jobs: jobPayloads,  });
     };
 
     public createJob = async (req: Request<{}, {}, JobPayload>, res: Response<{ job: JobPayload }>) => {
@@ -77,7 +81,7 @@ export default class JobController {
 
         const useCase = new RetrieveJobsUseCase(this.jobRepository, this.userRepository);
 
-        const job = await useCase.execute({ userId: req.user.userId, jobId: id }) as Job;
+        const job = (await useCase.execute({ userId: req.user.userId, jobId: id })) as Job;
 
         return res.status(StatusCodes.OK).json({
             job: this.toJobPayload(job),
@@ -111,10 +115,7 @@ export default class JobController {
         if (!req.user) {
             throw new UnauthenticatedError("Authentication Invalid");
         }
-        const useCase = new DeleteJobUseCase(
-            this.jobRepository,
-            this.userRepository
-        );
+        const useCase = new DeleteJobUseCase(this.jobRepository, this.userRepository);
 
         await useCase.execute({
             jobId: req.params.id,
@@ -133,5 +134,5 @@ export default class JobController {
         const { stats, monthlyApplications } = await useCase.execute(req.user.userId);
 
         return res.status(StatusCodes.OK).json({ defaultStats: stats, monthlyApplications });
-    }
+    };
 }
