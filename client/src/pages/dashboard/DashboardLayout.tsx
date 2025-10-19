@@ -8,22 +8,20 @@ import { getSavedDarkTheme } from "../../DarkThemeSwitcher";
 import apiClient from "../../utils/ApiClient";
 import { toast } from "react-toastify";
 import Loading from "../../components/Loading";
+import { useQuery } from "@tanstack/react-query";
+import { userQuery } from "./DashboardLoader";
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
     const navigation = useNavigation();
     const isPageLoading = navigation.state === "loading";
 
-    const loaderData: {
-        user: {
-            name: string;
-            lastName: string;
-            location: string;
-            email: string;
-            role: string;
-            imageId: string;
-        };
-    } = useLoaderData();
+    const initialData = useLoaderData();
+    const { data: loaderData } = useQuery({
+        ...userQuery,
+        initialData: initialData as any,
+    });
+
     const user = loaderData.user;
     const [showSidebar, setShowSidebar] = useState(false);
     const [isDarkTheme, setIsDarkTheme] = useState(getSavedDarkTheme());

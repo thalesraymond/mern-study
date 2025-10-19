@@ -1,6 +1,15 @@
 import { toast } from "react-toastify";
 import apiClient from "../../utils/ApiClient";
 import type { AxiosError } from "axios";
+import queryClient from "../../queryClient";
+
+export const userQuery = {
+    queryKey: ["user"],
+    queryFn: async () => {
+        const { data } = await apiClient.get("/user");
+        return data;
+    },
+};
 
 const dashboardLoader = async () => {
     const isExplore = localStorage.getItem("isExplore");
@@ -16,9 +25,7 @@ const dashboardLoader = async () => {
     }
 
     try {
-        const { data } = await apiClient.get("/user");
-
-        return data;
+        return await queryClient.ensureQueryData(userQuery);
     } catch (error) {
         const axiosError = error as AxiosError<{ msg: string }>;
 
