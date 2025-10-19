@@ -2,17 +2,28 @@ import { useState } from "react";
 import { useDashboardContext } from "../pages/dashboard/DashboardContext";
 import Wrapper from "../assets/wrappers/LogoutContainer";
 import { FaCaretDown, FaUserCircle } from "react-icons/fa";
+import { useQuery } from "@tanstack/react-query";
+import { profileImageQuery } from "../queries/imageQuery";
 
 const LogoutContainer = () => {
     const data = useDashboardContext();
 
     const [showLogout, setShowLogout] = useState(false);
 
+    const { data: imageBlob, isLoading } = useQuery({
+        ...profileImageQuery(data.user.imageId),
+        enabled: !!data.user.imageId,
+    });
+
+    const imageUrl = imageBlob ? URL.createObjectURL(imageBlob) : null;
+
     return (
         <Wrapper>
             <button type="button" className="btn logout-btn" onClick={() => setShowLogout(!showLogout)}>
-                {data.user.imageId ? (
-                    <img src={`/api/v1/user/profile-image?id=${data.user.imageId}`} className="img" />
+                {isLoading ? (
+                    <FaUserCircle />
+                ) : imageUrl ? (
+                    <img src={imageUrl} className="img" alt="profile" />
                 ) : (
                     <FaUserCircle />
                 )}
